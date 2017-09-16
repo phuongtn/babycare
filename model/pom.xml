@@ -31,7 +31,7 @@
 		<repository>
 			<id>internal.repo</id>
 			<name>Temporary Staging Repository</name>
-			<url>file://${project.build.directory}/mvn-repo</url>
+			<url>file://${project.build.directory}/model</url>
 		</repository>
 	</distributionManagement>
 
@@ -46,7 +46,6 @@
 			</plugin>
 
 
-
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
@@ -57,7 +56,7 @@
 					<!-- disable webpage processing -->
 					<noJekyll>true</noJekyll>
 					<!-- matches distribution management repository url above -->
-					<outputDirectory>${project.build.directory}/modelib</outputDirectory>
+					<outputDirectory>${project.build.directory}/model</outputDirectory>
 					<!-- remote branch name -->
 					<branch>refs/heads/master</branch>
 					<!-- If you remove this then the old artifact will be removed and new 
