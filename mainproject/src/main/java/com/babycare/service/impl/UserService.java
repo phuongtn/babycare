@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.babycare.dao.IOperations;
 import com.babycare.dao.IUserDao;
+import com.babycare.model.BaseModel;
 import com.babycare.model.User;
 import com.babycare.service.AbstractJpaService;
 import com.babycare.service.IUserService;
@@ -31,42 +32,28 @@ public class UserService extends AbstractJpaService<User> implements IUserServic
 	}
 
 	@Override
-	public User updatePushIdByHardwareIdAndProvider(String hardwareId, String provider, String pushId) {
-		return userDao.updatePushIdByHardwareIdAndProvider(hardwareId, provider, pushId);
-	}
-
-	@Override
-	public User updatePushIdByUserId(Long userId, String pushId) {
-		return userDao.updatePushIdByUserId(userId, pushId);
-	}
-
-	@Override
-	public User updateSignInStatusByUserId(Long userId, Integer status) {
-		return userDao.updateSignInStatusByUserId(userId, status);
-	}
-
-	@Override
-	public User updateSignInStatusByHardwareIdAndProvider(String hardwareId, String provider, Integer status) {
-		return userDao.updateSignInStatusByHardwareIdAndProvider(hardwareId, provider, status);
-	}
-
-	@Override
-	public User getUserByHardwareIdAndProvider(String hardwareId, String provider) {
-		return userDao.getUserByHardwareIdAndProvider(hardwareId, provider);
-	}
-
-	@Override
-	public User signIn(User user) {
-		return userDao.signIn(user);
-	}
-
-	@Override
-	public User signOut(User user) {
-		return userDao.signOut(user);
-	}
-
-	@Override
 	public User getUserByUserId(Long userId) {
 		return userDao.findOne(userId);
 	}
+
+	@Override
+	public BaseModel updatePushID(User user) {
+		return userDao.updatePushID(user);
+	}
+
+	@Override
+	public BaseModel Login(User user) {
+		return userDao.Login(user);
+	}
+
+	@Override
+	public BaseModel LogOut(User user) {
+		return userDao.LogOut(user);
+	}
+
+	@Override
+	public BaseModel register(User user) {
+		return userDao.register(user);
+	}
+
 }
