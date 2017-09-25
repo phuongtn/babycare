@@ -16,6 +16,8 @@ public interface IOperations<T extends Serializable> {
     
     T update(final T entity);
 
+    T updateEntity(final T entity);
+    
     void delete(T entity);
 
     void deleteById(final long entityId);

@@ -59,5 +59,13 @@ public class AbstractJpaDao<T extends Serializable> extends AbstractDao<T> imple
 		em.flush();
 		return entity;
 	}
+	
+    @Override
+    public T updateEntity(final T entity) {
+        em.merge(entity);
+        em.flush();
+        return entity;
+    }
+
 
 }
