@@ -56,10 +56,10 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 
 	@Override
 	public BaseModel register(User user) {
-		if (user != null && !Utils.isValidEmailAddress(user.getEmail()) && 
-				StringUtils.isEmpty(user.getProvider()) &&
-				StringUtils.isEmpty(user.getName())) {
-			return new Error(ErrorConstant.ERROR_EMAIL_INVALID, ErrorConstant.ERROR_EMAIL_INVALID_MESSAGE); 
+		if (user != null && !Utils.isValidEmailAddress(user.getEmail()) ||
+				StringUtils.isEmpty(user.getProvider()) || StringUtils.isEmpty(user.getName())) {
+			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
+			//return new Error(ErrorConstant.ERROR_EMAIL_INVALID, ErrorConstant.ERROR_EMAIL_INVALID_MESSAGE); 
 		} else {
 			BaseModel model = getUserByProviderEmail(user);
 			if (model instanceof User) {
