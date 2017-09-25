@@ -13,6 +13,7 @@ import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ErrorConstant;
+import com.babycare.model.UserConstant;
 import com.babycare.model.entity.Session;
 import com.babycare.model.entity.User;
 
@@ -75,6 +76,23 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 		}
 	}
 
+	public BaseModel getSession(Session session) {
+		if (session == null) {
+			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
+		} else {
+			Long sessionId = session.getSessionId();
+			if (sessionId != null) {
+				Session sessionEntity = findOne(sessionId);
+				if (sessionEntity != null) {
+					return sessionEntity;
+				} else {
+					return new Error(ErrorConstant.ERROR_SESSION_NOT_EXIST, ErrorConstant.ERROR_SESSION_NOT_EXIST_MESSAGE);
+				}
+			} else {
+				return getSessionByHardwareId(session);
+			}
+		}
+	}
 	@Override
 	public BaseModel addOrUpdateSession(Session session) {
 		if (session == null) {
@@ -86,7 +104,7 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 			} else if (session.getSessionId() != null) {
 				return updateSessionWithSessionId(session);
 			} else {
-				BaseModel sessionEntity = getSession(session);
+				BaseModel sessionEntity = getSessionByHardwareId(session);
 				if (sessionEntity instanceof Error) {
 					return addSession(userId, session);
 				} else {
@@ -108,7 +126,6 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 
 	}
 
-	
 	private BaseModel updateSession(Session session) {
 		Session sessionEntityUpdated = updateEntity(session);
 		if (sessionEntityUpdated != null) {
@@ -160,17 +177,35 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 	}
 
 	@Override
-	public BaseModel getSession(Session session) {
-		if (session != null) {
+	public BaseModel getSessionBySessionId(Session session) {
+		if (session == null) {
+			return new Error(ErrorConstant.ERROR_SESSION_NOT_EXIST, ErrorConstant.ERROR_SESSION_NOT_EXIST_MESSAGE); 
+		} else {
+			Long sessionId = session.getSessionId();
+			if (sessionId != null) {
+				Session sessionEntity = findOne(sessionId);
+				if (sessionEntity != null) {
+					return sessionEntity;
+				} else {
+					return new Error(ErrorConstant.ERROR_SESSION_NOT_EXIST, ErrorConstant.ERROR_SESSION_NOT_EXIST_MESSAGE);
+				}
+			} else {
+				return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
+			}
+		}
+	}
+
+	@Override
+	public BaseModel getSessionByHardwareId(Session session) {
+		if (session == null) {
+			return new Error(ErrorConstant.ERROR_SESSION_NOT_EXIST, ErrorConstant.ERROR_SESSION_NOT_EXIST_MESSAGE); 
+		} else {
 			String hardwareId = session.getHardwareId();
-			String platform = session.getPlatform();
-			Long userId = session.getUserId();
-			if (StringUtils.isNotEmpty(hardwareId) && StringUtils.isNotEmpty(platform) && userId != null) {
-				String hql = "FROM Session WHERE hardwareId = ? AND platform = ? AND userId = ?";
+			if (StringUtils.isNotEmpty(hardwareId)) {
+				String hql = "FROM Session WHERE hardwareId = ?";
 				Session entity = null;
 				try {
-					entity = (Session) em.createQuery(hql).setParameter(0, hardwareId).setParameter(1, platform)
-							.setParameter(2, userId).getSingleResult();
+					entity = (Session) em.createQuery(hql).setParameter(0, hardwareId).getSingleResult();
 				} catch (Exception e) {
 					entity = null;
 					return new Error(ErrorConstant.ERROR_SESSION_NOT_EXIST,
@@ -184,10 +219,69 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 							ErrorConstant.ERROR_SESSION_NOT_EXIST_MESSAGE);
 				}
 			} else {
-				return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
+				return new Error(ErrorConstant.ERROR_SESSION_NOT_EXIST, ErrorConstant.ERROR_SESSION_NOT_EXIST_MESSAGE); 
 			}
+		}
+	}
+
+	@Override
+	public BaseModel loginBySessionId(Session session) {
+		BaseModel model = getSessionBySessionId(session);
+		if (model instanceof Session) {
+			return updateSessionStatus((Session) model, UserConstant.Status.SIGNIN.getValue());
 		} else {
-			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
+			return model;
+		}
+	}
+
+	@Override
+	public BaseModel logoutBySessionId(Session session) {
+		BaseModel model = getSessionBySessionId(session);
+		if (model instanceof Session) {
+			return updateSessionStatus((Session) model, UserConstant.Status.SIGNOUT.getValue());
+		} else {
+			return model;
+		}
+	}
+
+	@Override
+	public BaseModel loginByHardwareId(Session session) {
+		BaseModel model = getSessionByHardwareId(session);
+		if (model instanceof Session) {
+			return updateSessionStatus((Session) model, UserConstant.Status.SIGNIN.getValue());
+		} else {
+			return model;
+		}
+	}
+
+	@Override
+	public BaseModel logoutByHardwareId(Session session) {
+		BaseModel model = getSessionByHardwareId(session);
+		if (model instanceof Session) {
+			return updateSessionStatus((Session) model, UserConstant.Status.SIGNOUT.getValue());
+		} else {
+			return model;
+		}
+	}
+
+	private BaseModel updateSessionStatus(Session session, Integer status) {
+		session.setStatus(status);
+		Session sessionUpdated = null;
+		String exception = null;
+		try {
+			sessionUpdated = updateEntity(session);
+		} catch (Exception e) {
+			sessionUpdated = null;
+			exception = e.getMessage();
+		}
+		if (sessionUpdated != null) {
+			return sessionUpdated;
+		} else {
+			if (StringUtils.isNotEmpty(exception)) {
+				return new Error(ErrorConstant.ERROR_UPDATE_SESSION_STATUS, ErrorConstant.ERROR_UPDATE_SESSION_STATUS_MESSAGE, exception);
+			} else {
+				return new Error(ErrorConstant.ERROR_UPDATE_SESSION_STATUS, ErrorConstant.ERROR_UPDATE_SESSION_STATUS_MESSAGE);
+			}
 		}
 	}
 

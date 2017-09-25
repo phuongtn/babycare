@@ -2,12 +2,14 @@ package com.babycare.dao.impl;
 
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.babycare.Utils;
 import com.babycare.dao.AbstractJpaDao;
+import com.babycare.dao.ISessionDAO;
 import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
@@ -18,6 +20,10 @@ import com.babycare.model.entity.User;
 @Transactional
 @Qualifier("userDAO")
 public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
+	@Autowired
+	@Qualifier("sessionDAO")
+	private ISessionDAO sessionDAO;
+
 	public UserDAO() {
 		super();
 		setClazz(User.class);
@@ -50,14 +56,36 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 
 	@Override
 	public BaseModel register(User user) {
-		if (user != null && !Utils.isValidEmailAddress(user.getEmail())) {
+		if (user != null && !Utils.isValidEmailAddress(user.getEmail()) && 
+				StringUtils.isEmpty(user.getProvider()) &&
+				StringUtils.isEmpty(user.getName())) {
 			return new Error(ErrorConstant.ERROR_EMAIL_INVALID, ErrorConstant.ERROR_EMAIL_INVALID_MESSAGE); 
 		} else {
 			BaseModel model = getUserByProviderEmail(user);
 			if (model instanceof User) {
 				return new Error(ErrorConstant.ERROR_USER_EXIST, ErrorConstant.ERROR_USER_EXIST_MESSAGE);
 			} else {
-				return createEntity(user);
+				return createUser(user);
+			}
+		}
+	}
+
+	private BaseModel createUser(User user) {
+		User userCreated = null;
+		String exception = null;
+		try {
+			userCreated = updateEntity(user);
+		} catch (Exception e) {
+			userCreated = null;
+			exception = e.getMessage();
+		}
+		if (userCreated != null) {
+			return userCreated;
+		} else {
+			if (StringUtils.isNotEmpty(exception)) {
+				return new Error(ErrorConstant.ERROR_CREATE_USER, ErrorConstant.ERROR_CREATE_USER_MESSAGE, exception);
+			} else {
+				return new Error(ErrorConstant.ERROR_CREATE_USER, ErrorConstant.ERROR_CREATE_USER_MESSAGE);
 			}
 		}
 	}

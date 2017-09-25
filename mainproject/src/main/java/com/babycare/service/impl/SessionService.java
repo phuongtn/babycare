@@ -12,19 +12,13 @@ import com.babycare.service.ISessionService;
 
 
 @Service(value = "sessionService")
-public class SessionService  extends AbstractJpaService<Session> implements ISessionService{
-
+public class SessionService extends AbstractJpaService<Session> implements ISessionService{
 	@Autowired
 	@Qualifier("sessionDAO")
 	private ISessionDAO sessionDAO;
 	@Override
 	public BaseModel addOrUpdateSession(Session session) {
 		return sessionDAO.addOrUpdateSession(session) ;
-	}
-
-	@Override
-	public BaseModel getSession(Session session) {
-		return sessionDAO.getSession(session);
 	}
 
 	@Override
@@ -40,6 +34,36 @@ public class SessionService  extends AbstractJpaService<Session> implements ISes
 	@Override
 	public Session updateEntity(Session entity) {
 		return sessionDAO.updateEntity(entity);
+	}
+
+	@Override
+	public BaseModel getSessionBySessionId(Session session) {
+		return sessionDAO.getSessionBySessionId(session);
+	}
+
+	@Override
+	public BaseModel getSessionByHardwareId(Session session) {
+		return sessionDAO.getSessionByHardwareId(session);
+	}
+
+	@Override
+	public BaseModel loginBySessionId(Session session) {
+		return sessionDAO.loginBySessionId(session);
+	}
+
+	@Override
+	public BaseModel logoutBySessionId(Session session) {
+		return sessionDAO.logoutBySessionId(session);
+	}
+
+	@Override
+	public BaseModel loginByHardwareId(Session session) {
+		return sessionDAO.loginByHardwareId(session);
+	}
+
+	@Override
+	public BaseModel logoutByHardwareId(Session session) {
+		return sessionDAO.logoutByHardwareId(session);
 	}
 
 }
