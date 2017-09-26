@@ -40,7 +40,7 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 			//String pushId = session.getPushId();
 			Integer status = session.getStatus();
 			Long sessionId = session.getSessionId();
-			if (StringUtils.isNotEmpty(hardwareId) && StringUtils.isNotEmpty(platform) && status != null) {
+			if (StringUtils.isNotEmpty(hardwareId) || StringUtils.isNotEmpty(platform) || status != null) {
 				String exception = null;
 				Session sessionEntityUpdated = null;
 				Session sessionEntity = findOne(sessionId);
@@ -97,7 +97,7 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 					String platform = session.getPlatform();
 					String pushId = session.getPushId();
 					Integer status = session.getStatus();
-					if (StringUtils.isNotEmpty(hardwareId) && StringUtils.isNotEmpty(platform) && status != null) {
+					if (StringUtils.isNotEmpty(hardwareId) || StringUtils.isNotEmpty(platform) || status != null) {
 						session.setUser(((Session) sessionEntity).getUser());
 						session.setSessionId(((Session) sessionEntity).getSessionId());
 						return updateSession(session);
@@ -122,10 +122,9 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 	private BaseModel addSession(Long userId, Session session) {
 		String hardwareId = session.getHardwareId();
 		String platform = session.getPlatform();
-		String pushId = session.getPushId();
 		Integer status = session.getStatus();
-		if (StringUtils.isNotEmpty(hardwareId) && StringUtils.isNotEmpty(platform)
-				&& StringUtils.isNotEmpty(pushId) && status != null) {
+		if (StringUtils.isNotEmpty(hardwareId) || StringUtils.isNotEmpty(platform)
+				 || status != null) {
 			User userEntity = null;
 			String exception = null;
 			Session sessionEntityAdded;

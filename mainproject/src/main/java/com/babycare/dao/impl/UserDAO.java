@@ -29,7 +29,7 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 		if (user != null) {
 			String email = user.getEmail();
 			String provider = user.getProvider();
-			if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(provider)) {
+			if (StringUtils.isNotEmpty(email) || StringUtils.isNotEmpty(provider)) {
 				String hql = "FROM User as usr WHERE usr.provider = ? AND usr.email = ?";
 				User entity = null;
 				try {
@@ -52,7 +52,7 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 
 	@Override
 	public BaseModel register(User user) {
-		if (user != null && !Utils.isValidEmailAddress(user.getEmail()) ||
+		if (user != null || !Utils.isValidEmailAddress(user.getEmail()) ||
 				StringUtils.isEmpty(user.getProvider()) || StringUtils.isEmpty(user.getName())) {
 			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
 			//return new Error(ErrorConstant.ERROR_EMAIL_INVALID, ErrorConstant.ERROR_EMAIL_INVALID_MESSAGE); 
