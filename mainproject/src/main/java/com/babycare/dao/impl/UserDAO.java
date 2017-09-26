@@ -20,10 +20,6 @@ import com.babycare.model.entity.User;
 @Transactional
 @Qualifier("userDAO")
 public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
-	@Autowired
-	@Qualifier("sessionDAO")
-	private ISessionDAO sessionDAO;
-
 	public UserDAO() {
 		super();
 		setClazz(User.class);
