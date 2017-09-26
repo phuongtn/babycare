@@ -37,11 +37,10 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 		} else {
 			String hardwareId = session.getHardwareId();
 			String platform = session.getPlatform();
-			String pushId = session.getPushId();
+			//String pushId = session.getPushId();
 			Integer status = session.getStatus();
 			Long sessionId = session.getSessionId();
-			if (StringUtils.isNotEmpty(hardwareId) && StringUtils.isNotEmpty(platform)
-					&& StringUtils.isNotEmpty(pushId) && status != null) {
+			if (StringUtils.isNotEmpty(hardwareId) && StringUtils.isNotEmpty(platform) && status != null) {
 				String exception = null;
 				Session sessionEntityUpdated = null;
 				Session sessionEntity = findOne(sessionId);
@@ -76,23 +75,6 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 		}
 	}
 
-	public BaseModel getSession(Session session) {
-		if (session == null) {
-			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
-		} else {
-			Long sessionId = session.getSessionId();
-			if (sessionId != null) {
-				Session sessionEntity = findOne(sessionId);
-				if (sessionEntity != null) {
-					return sessionEntity;
-				} else {
-					return new Error(ErrorConstant.ERROR_SESSION_NOT_EXIST, ErrorConstant.ERROR_SESSION_NOT_EXIST_MESSAGE);
-				}
-			} else {
-				return getSessionByHardwareId(session);
-			}
-		}
-	}
 	@Override
 	public BaseModel addOrUpdateSession(Session session) {
 		if (session == null) {
@@ -102,18 +84,20 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 			if (userId == null) {
 				return new Error(ErrorConstant.ERROR_USER_NOT_EXIST, ErrorConstant.ERROR_USER_NOT_EXIST_MESSAGE);
 			} else if (session.getSessionId() != null) {
+				// Update if sessionId != null
 				return updateSessionWithSessionId(session);
 			} else {
 				BaseModel sessionEntity = getSessionByHardwareId(session);
 				if (sessionEntity instanceof Error) {
+					// Add session id not found session by hardwareId
 					return addSession(userId, session);
 				} else {
+					// Add session id not found session by hardwareId
 					String hardwareId = session.getHardwareId();
 					String platform = session.getPlatform();
 					String pushId = session.getPushId();
 					Integer status = session.getStatus();
-					if (StringUtils.isNotEmpty(hardwareId) && StringUtils.isNotEmpty(platform)
-							&& StringUtils.isNotEmpty(pushId) && status != null) {
+					if (StringUtils.isNotEmpty(hardwareId) && StringUtils.isNotEmpty(platform) && status != null) {
 						session.setUser(((Session) sessionEntity).getUser());
 						session.setSessionId(((Session) sessionEntity).getSessionId());
 						return updateSession(session);
@@ -282,6 +266,45 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 			} else {
 				return new Error(ErrorConstant.ERROR_UPDATE_SESSION_STATUS, ErrorConstant.ERROR_UPDATE_SESSION_STATUS_MESSAGE);
 			}
+		}
+	}
+
+	@Override
+	public BaseModel updatePushIdBySessionId(Session session) {
+		BaseModel model = getSessionBySessionId(session);
+		return updatePushId(model, session.getPushId());
+	}
+
+	@Override
+	public BaseModel updatePushIdByHardwareId(Session session) {
+		BaseModel model = getSessionByHardwareId(session);
+		updatePushId(model, session.getPushId());
+		return null;
+	}
+
+	private BaseModel updatePushId(BaseModel model, String pushId) {
+		if (model instanceof Session) {
+			Session sessionEntity = (Session) model;
+			sessionEntity.setPushId(pushId);
+			Session sessionUpdated = null;
+			String exception = null;
+			try {
+				sessionUpdated = updateEntity(sessionEntity);
+			} catch(Exception e) {
+				sessionUpdated = null;
+				exception = e.getMessage();
+			}
+			if (sessionUpdated != null) {
+				return sessionUpdated;
+			} else {
+				if (StringUtils.isNotEmpty(exception)) {
+					return new Error(ErrorConstant.ERROR_UPDATE_SESSION_PUSHID, ErrorConstant.ERROR_UPDATE_SESSION_PUSHID_MESSAGE, exception);
+				} else {
+					return new Error(ErrorConstant.ERROR_UPDATE_SESSION_PUSHID, ErrorConstant.ERROR_UPDATE_SESSION_PUSHID_MESSAGE);
+				}
+			}
+		} else {
+			return model;
 		}
 	}
 

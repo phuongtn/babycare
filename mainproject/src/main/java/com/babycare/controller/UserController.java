@@ -25,6 +25,10 @@ public class UserController {
 	@PostMapping(value = "/register", headers = "Accept=application/json", produces = "applicaiton/json")
 	public @ResponseBody ResponseEntity<BaseModel> register(@RequestBody User body) {
 		BaseModel model = userService.register(body);
+		return Response(model);
+	}
+
+	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof User) {
 			return new ResponseEntity<BaseModel>((User) model, HttpStatus.OK);
 		} else if (model instanceof Error) {
@@ -32,5 +36,5 @@ public class UserController {
 		} else {
 			return new ResponseEntity<BaseModel>((User) null, HttpStatus.CONFLICT);
 		}
-	}
+	} 
 }
