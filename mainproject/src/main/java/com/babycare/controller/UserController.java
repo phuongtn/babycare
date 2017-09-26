@@ -40,6 +40,12 @@ public class UserController {
 		return Response(model);
 	}
 
+	@PostMapping(value = "/update/by/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
+	public @ResponseBody ResponseEntity<BaseModel> updateByEmailAndProvider(@RequestBody User body) {
+		BaseModel model = userService.updateByEmailAndProvider(body);
+		return Response(model);
+	}
+	
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof User) {
 			return new ResponseEntity<BaseModel>((User) model, HttpStatus.OK);

@@ -28,7 +28,7 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 		if (user != null) {
 			String email = user.getEmail();
 			String provider = user.getProvider();
-			if (StringUtils.isNotEmpty(email) || StringUtils.isNotEmpty(provider)) {
+			if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(provider)) {
 				String hql = "FROM User as usr WHERE usr.provider = ? AND usr.email = ?";
 				User entity = null;
 				try {
@@ -90,8 +90,8 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 	}
 
 	@Override
-	public BaseModel updateUser(User user) {
-		if (user == null || user.getUserId() == null) {
+	public BaseModel updateByEmailAndProvider(User user) {
+		if (user == null) {
 			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
 		} else {
 			BaseModel model = getUserByEmailAndProvider(user);
@@ -101,8 +101,10 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 				User userEntityUpdated = null;
 				String exception = null;
 				try {
-					userEntityUpdated = updateEntity(userEntityUpdated);
-
+					User updatedModel = (User) model;
+					updatedModel.setDob(user.getDob());
+					updatedModel.setName(user.getName());
+					userEntityUpdated = updateEntity(updatedModel);
 				} catch (Exception e) {
 					userEntityUpdated = null;
 					exception = e.getMessage();
