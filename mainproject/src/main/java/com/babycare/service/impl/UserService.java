@@ -37,4 +37,19 @@ public class UserService extends AbstractJpaService<User> implements IUserServic
 		return userDao.updateEntity(entity);
 	}
 
+	@Override
+	public BaseModel updateUser(User user) {
+		return userDao.updateUser(user);
+	}
+
+	@Override
+	public BaseModel getUserByUserId(User user) {
+		return userDao.getUserByUserId(user);
+	}
+
+	@Override
+	public BaseModel getUserByEmailAndProvider(User user) {
+		return userDao.getUserByEmailAndProvider(user);
+	}
+
 }

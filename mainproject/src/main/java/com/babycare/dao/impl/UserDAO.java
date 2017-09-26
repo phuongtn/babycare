@@ -2,14 +2,12 @@ package com.babycare.dao.impl;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.babycare.Utils;
 import com.babycare.dao.AbstractJpaDao;
-import com.babycare.dao.ISessionDAO;
 import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
@@ -25,7 +23,8 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 		setClazz(User.class);
 	}
 
-	private BaseModel getUserByProviderEmail(User user) {
+	@Override
+	public BaseModel getUserByEmailAndProvider(User user) {
 		if (user != null) {
 			String email = user.getEmail();
 			String provider = user.getProvider();
@@ -59,7 +58,7 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 				return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
 				//return new Error(ErrorConstant.ERROR_EMAIL_INVALID, ErrorConstant.ERROR_EMAIL_INVALID_MESSAGE); 
 			} else {
-				BaseModel model = getUserByProviderEmail(user);
+				BaseModel model = getUserByEmailAndProvider(user);
 				if (model instanceof User) {
 					return new Error(ErrorConstant.ERROR_USER_EXIST, ErrorConstant.ERROR_USER_EXIST_MESSAGE);
 				} else {
@@ -86,6 +85,51 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 				return new Error(ErrorConstant.ERROR_CREATE_USER, ErrorConstant.ERROR_CREATE_USER_MESSAGE, exception);
 			} else {
 				return new Error(ErrorConstant.ERROR_CREATE_USER, ErrorConstant.ERROR_CREATE_USER_MESSAGE);
+			}
+		}
+	}
+
+	@Override
+	public BaseModel updateUser(User user) {
+		if (user == null || user.getUserId() == null) {
+			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
+		} else {
+			BaseModel model = getUserByEmailAndProvider(user);
+			if (model instanceof Error) {
+				return new Error(ErrorConstant.ERROR_USER_NOT_EXIST, ErrorConstant.ERROR_USER_NOT_EXIST_MESSAGE);
+			} else {
+				User userEntityUpdated = null;
+				String exception = null;
+				try {
+					userEntityUpdated = updateEntity(userEntityUpdated);
+
+				} catch (Exception e) {
+					userEntityUpdated = null;
+					exception = e.getMessage();
+				}
+				if (userEntityUpdated != null) {
+					return userEntityUpdated;
+				} else {
+					if (StringUtils.isNotEmpty(exception)) {
+						return new Error(ErrorConstant.ERROR_UPDATE_USER, ErrorConstant.ERROR_UPDATE_USER_MESSAGE, exception);
+					} else {
+						return new Error(ErrorConstant.ERROR_UPDATE_USER, ErrorConstant.ERROR_UPDATE_USER_MESSAGE);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public BaseModel getUserByUserId(User user) {
+		if (user == null || user.getUserId() == null) {
+			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
+		} else {
+			User enntity = findOne(user.getUserId());
+			if (enntity == null) {
+				return new Error(ErrorConstant.ERROR_USER_NOT_EXIST, ErrorConstant.ERROR_USER_NOT_EXIST_MESSAGE);
+			} else {
+				return enntity;
 			}
 		}
 	}

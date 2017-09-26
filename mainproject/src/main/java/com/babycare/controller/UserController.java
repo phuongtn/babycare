@@ -28,6 +28,18 @@ public class UserController {
 		return Response(model);
 	}
 
+	@PostMapping(value = "/by/userid", headers = "Accept=application/json", produces = "applicaiton/json")
+	public @ResponseBody ResponseEntity<BaseModel> getUserByUserId(@RequestBody User body) {
+		BaseModel model = userService.getUserByUserId(body);
+		return Response(model);
+	}
+
+	@PostMapping(value = "/by/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
+	public @ResponseBody ResponseEntity<BaseModel> getUserByEmailAndProvider(@RequestBody User body) {
+		BaseModel model = userService.getUserByEmailAndProvider(body);
+		return Response(model);
+	}
+
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof User) {
 			return new ResponseEntity<BaseModel>((User) model, HttpStatus.OK);
@@ -36,5 +48,6 @@ public class UserController {
 		} else {
 			return new ResponseEntity<BaseModel>((User) null, HttpStatus.CONFLICT);
 		}
-	} 
+	}
+
 }
