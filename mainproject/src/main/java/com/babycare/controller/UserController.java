@@ -28,13 +28,13 @@ public class UserController {
 		return Response(model);
 	}
 
-	@PostMapping(value = "/by/userid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "get/userid", headers = "Accept=application/json", produces = "applicaiton/json")
 	public @ResponseBody ResponseEntity<BaseModel> getUserByUserId(@RequestBody User body) {
 		BaseModel model = userService.getUserByUserId(body);
 		return Response(model);
 	}
 
-	@PostMapping(value = "/by/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/get/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
 	public @ResponseBody ResponseEntity<BaseModel> getUserByEmailAndProvider(@RequestBody User body) {
 		BaseModel model = userService.getUserByEmailAndProvider(body);
 		return Response(model);
