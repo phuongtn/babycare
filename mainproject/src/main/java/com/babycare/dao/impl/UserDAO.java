@@ -52,25 +52,29 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 
 	@Override
 	public BaseModel register(User user) {
-		if (user != null || !Utils.isValidEmailAddress(user.getEmail()) ||
-				StringUtils.isEmpty(user.getProvider()) || StringUtils.isEmpty(user.getName())) {
+		if (user == null) {
 			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
-			//return new Error(ErrorConstant.ERROR_EMAIL_INVALID, ErrorConstant.ERROR_EMAIL_INVALID_MESSAGE); 
 		} else {
-			BaseModel model = getUserByProviderEmail(user);
-			if (model instanceof User) {
-				return new Error(ErrorConstant.ERROR_USER_EXIST, ErrorConstant.ERROR_USER_EXIST_MESSAGE);
+			if (!Utils.isValidEmailAddress(user.getEmail()) || StringUtils.isEmpty(user.getProvider()) || StringUtils.isEmpty(user.getName())) {
+				return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
+				//return new Error(ErrorConstant.ERROR_EMAIL_INVALID, ErrorConstant.ERROR_EMAIL_INVALID_MESSAGE); 
 			} else {
-				return createUser(user);
+				BaseModel model = getUserByProviderEmail(user);
+				if (model instanceof User) {
+					return new Error(ErrorConstant.ERROR_USER_EXIST, ErrorConstant.ERROR_USER_EXIST_MESSAGE);
+				} else {
+					return createUser(user);
+				}
 			}
 		}
+		
 	}
 
 	private BaseModel createUser(User user) {
 		User userCreated = null;
 		String exception = null;
 		try {
-			userCreated = updateEntity(user);
+			userCreated = createEntity(user);
 		} catch (Exception e) {
 			userCreated = null;
 			exception = e.getMessage();
