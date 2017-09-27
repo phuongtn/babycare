@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
+import com.babycare.model.ResultList;
 import com.babycare.model.entity.Child;
 import com.babycare.model.entity.User;
 import com.babycare.service.IChildService;
@@ -41,11 +42,19 @@ public class ChildController {
 		return Response(model);
 	}
 
+	@PostMapping(value = "/fetch/by/userid", headers = "Accept=application/json", produces = "applicaiton/json")
+	public @ResponseBody ResponseEntity<BaseModel> fetchChildrenByUserId(@RequestBody Child body) {
+		BaseModel model = childService.fetchChildrenByUserId(body);
+		return Response(model);
+	}
+
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof Child) {
 			return new ResponseEntity<BaseModel>((Child) model, HttpStatus.OK);
 		} else if (model instanceof Error) {
 			return new ResponseEntity<BaseModel>(model, HttpStatus.CONFLICT);
+		} else if (model instanceof ResultList){
+			return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<BaseModel>((Child) null, HttpStatus.CONFLICT);
 		}

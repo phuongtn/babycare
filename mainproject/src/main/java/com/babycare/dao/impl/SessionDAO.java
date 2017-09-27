@@ -37,7 +37,6 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 		} else {
 			String hardwareId = session.getHardwareId();
 			String platform = session.getPlatform();
-			//String pushId = session.getPushId();
 			Integer status = session.getStatus();
 			Long sessionId = session.getSessionId();
 			if (StringUtils.isNotEmpty(hardwareId) || StringUtils.isNotEmpty(platform) || status != null) {

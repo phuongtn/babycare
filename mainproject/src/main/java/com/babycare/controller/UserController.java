@@ -47,6 +47,12 @@ public class UserController {
 		return Response(model);
 	}
 
+	@PutMapping(value = "/update/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
+	public @ResponseBody ResponseEntity<BaseModel> updateUserByUserId(@RequestBody User body) {
+		BaseModel model = userService.updateUserByUserId(body);
+		return Response(model);
+	}
+
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof User) {
 			return new ResponseEntity<BaseModel>((User) model, HttpStatus.OK);

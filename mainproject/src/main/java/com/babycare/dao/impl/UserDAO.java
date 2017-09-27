@@ -56,9 +56,8 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 		if (user == null) {
 			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
 		} else {
-			if (!Utils.isValidEmailAddress(user.getEmail()) || StringUtils.isEmpty(user.getProvider()) || StringUtils.isEmpty(user.getName())) {
+			if (validateUser(false, user)) {
 				return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
-				//return new Error(ErrorConstant.ERROR_EMAIL_INVALID, ErrorConstant.ERROR_EMAIL_INVALID_MESSAGE); 
 			} else {
 				BaseModel model = getUserByEmailAndProvider(user);
 				if (model instanceof User) {
@@ -93,7 +92,7 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 
 	@Override
 	public BaseModel updateByEmailAndProvider(User user) {
-		if (user == null) {
+		if (!validateUser(false, user)) {
 			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
 		} else {
 			BaseModel model = getUserByEmailAndProvider(user);
@@ -139,23 +138,43 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 	}
 
 	@Override
-	public BaseModel updateUser(@Nonnull User user) {
+	public BaseModel updateUserByUserId(@Nonnull User user) {
 		User userEntityUpdated = null;
 		String exception = null;
-		try {
-			userEntityUpdated = updateEntity(user);
-		} catch (Exception e) {
-			userEntityUpdated = null;
-			exception = e.getMessage();
-		}
-		if (userEntityUpdated != null) {
-			return userEntityUpdated;
+		if (!validateUser(true, user)) {
+			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
 		} else {
-			if (StringUtils.isNotEmpty(exception)) {
-				return new Error(ErrorConstant.ERROR_UPDATE_USER, ErrorConstant.ERROR_UPDATE_USER_MESSAGE, exception);
+			BaseModel model = getUserByUserId(user);
+			if (model instanceof User) {
+				try {
+					userEntityUpdated = updateEntity(user);
+				} catch (Exception e) {
+					userEntityUpdated = null;
+					exception = e.getMessage();
+				}
+				if (userEntityUpdated != null) {
+					return userEntityUpdated;
+				} else {
+					if (StringUtils.isNotEmpty(exception)) {
+						return new Error(ErrorConstant.ERROR_UPDATE_USER, ErrorConstant.ERROR_UPDATE_USER_MESSAGE, exception);
+					} else {
+						return new Error(ErrorConstant.ERROR_UPDATE_USER, ErrorConstant.ERROR_UPDATE_USER_MESSAGE);
+					}
+				}
 			} else {
-				return new Error(ErrorConstant.ERROR_UPDATE_USER, ErrorConstant.ERROR_UPDATE_USER_MESSAGE);
+				return new Error(ErrorConstant.ERROR_USER_NOT_EXIST, ErrorConstant.ERROR_USER_NOT_EXIST_MESSAGE);
 			}
+		}
+	}
+	
+	private boolean validateUser(boolean isCheckId, User user) {
+		if (user == null) {
+			return false;
+		} else {
+			if (isCheckId ) {
+				return (user.getUserId() != null);
+			}
+			return (Utils.isValidEmailAddress(user.getEmail()) && StringUtils.isNotEmpty(user.getName()) && StringUtils.isNotEmpty(user.getProvider()));
 		}
 	}
 }

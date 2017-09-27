@@ -1,5 +1,8 @@
 package com.babycare.dao.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,6 +15,7 @@ import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ErrorConstant;
+import com.babycare.model.ResultList;
 import com.babycare.model.entity.Child;
 import com.babycare.model.entity.User;
 
@@ -30,7 +34,7 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 
 	@Override
 	public BaseModel addChild(Child child) {
-		if (child == null || !validChild(child)) {
+		if (child == null || child.getBabyType() == null || StringUtils.isBlank(child.getName())) {
 			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
 		} else {
 			Long userId = child.getUserId();
@@ -60,7 +64,8 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 
 	@Override
 	public BaseModel updateChild(Child child) {
-		if (child == null || child.getChildId() == null || child.getUserId() == null) {
+		if (child == null || child.getChildId() == null || child.getUserId() == null || 
+				child.getBabyType() == null || StringUtils.isBlank(child.getName())) {
 			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE); 
 		} else {
 			Child childCreated = null;
@@ -89,14 +94,11 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 		return null;
 	}
 	
-	private boolean validChild(Child child) {
-		return (child.getBabyType() != null && StringUtils.isNotBlank(child.getName())); 
-	}
 
 	@Override
 	public BaseModel getChildById(Child child) {
 		if (child == null || child.getChildId() == null) {
-			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE); 
+			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
 		} else {
 			Long childId = child.getChildId();
 			Child childEntity = null;
@@ -115,6 +117,27 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 				} else {
 					return new Error(ErrorConstant.ERROR_CHILD_NOT_EXIST, ErrorConstant.ERROR_CHILD_NOT_EXIST_MESSAGE, exception);
 				}
+			}
+		}
+	}
+
+	@Override
+	public BaseModel fetchChildrenByUserId(Child child) {
+		if (child == null || child.getUserId() == null) {
+			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE); 
+		} else {
+			Long userId = child.getUserId();
+			String hql = "FROM Child as child WHERE child.userId = ?";
+			try {
+				List<BaseModel> result = (List<BaseModel>)em.createQuery(hql).setParameter(0, userId).getResultList();
+				if (result != null || !result.isEmpty()) {
+					ResultList<BaseModel> resultList = new ResultList<BaseModel>(result);
+					return resultList;
+				} else {
+					return new ResultList<BaseModel>(new ArrayList<>());
+				}
+			} catch (Exception e) {
+				return new ResultList<BaseModel>(new ArrayList<>());
 			}
 		}
 	}

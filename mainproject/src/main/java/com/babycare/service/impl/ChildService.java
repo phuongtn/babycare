@@ -46,4 +46,9 @@ public class ChildService extends AbstractJpaService<Child> implements IChildSer
 	public BaseModel getChildById(Child child) {
 		return childDAO.getChildById(child);
 	}
+
+	@Override
+	public BaseModel fetchChildrenByUserId(Child child) {
+		return childDAO.fetchChildrenByUserId(child);
+	}
 }

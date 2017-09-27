@@ -8,4 +8,5 @@ public interface IChildDAO extends IOperations<Child>{
 	BaseModel updateChild(Child child);
 	BaseModel removeChild(Child child);
 	BaseModel getChildById(Child child);
+	BaseModel fetchChildrenByUserId(Child child);
 }
