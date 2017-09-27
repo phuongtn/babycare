@@ -1,6 +1,8 @@
 package com.babycare.dao.impl;
 
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -132,6 +134,27 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 				return new Error(ErrorConstant.ERROR_USER_NOT_EXIST, ErrorConstant.ERROR_USER_NOT_EXIST_MESSAGE);
 			} else {
 				return enntity;
+			}
+		}
+	}
+
+	@Override
+	public BaseModel updateUser(@Nonnull User user) {
+		User userEntityUpdated = null;
+		String exception = null;
+		try {
+			userEntityUpdated = updateEntity(user);
+		} catch (Exception e) {
+			userEntityUpdated = null;
+			exception = e.getMessage();
+		}
+		if (userEntityUpdated != null) {
+			return userEntityUpdated;
+		} else {
+			if (StringUtils.isNotEmpty(exception)) {
+				return new Error(ErrorConstant.ERROR_UPDATE_USER, ErrorConstant.ERROR_UPDATE_USER_MESSAGE, exception);
+			} else {
+				return new Error(ErrorConstant.ERROR_UPDATE_USER, ErrorConstant.ERROR_UPDATE_USER_MESSAGE);
 			}
 		}
 	}

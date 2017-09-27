@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,24 +29,24 @@ public class UserController {
 		return Response(model);
 	}
 
-	@PostMapping(value = "get/userid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/get/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
 	public @ResponseBody ResponseEntity<BaseModel> getUserByUserId(@RequestBody User body) {
 		BaseModel model = userService.getUserByUserId(body);
 		return Response(model);
 	}
 
-	@PostMapping(value = "/get/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/get/by/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
 	public @ResponseBody ResponseEntity<BaseModel> getUserByEmailAndProvider(@RequestBody User body) {
 		BaseModel model = userService.getUserByEmailAndProvider(body);
 		return Response(model);
 	}
 
-	@PostMapping(value = "/update/by/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PutMapping(value = "/update/by/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
 	public @ResponseBody ResponseEntity<BaseModel> updateByEmailAndProvider(@RequestBody User body) {
 		BaseModel model = userService.updateByEmailAndProvider(body);
 		return Response(model);
 	}
-	
+
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof User) {
 			return new ResponseEntity<BaseModel>((User) model, HttpStatus.OK);

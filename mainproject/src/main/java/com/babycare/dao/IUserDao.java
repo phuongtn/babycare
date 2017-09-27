@@ -8,4 +8,5 @@ public interface IUserDao extends IOperations<User> {
 	BaseModel updateByEmailAndProvider(User user);
 	BaseModel getUserByUserId(User user);
 	BaseModel getUserByEmailAndProvider(User user);
+	BaseModel updateUser(User user);
 }
