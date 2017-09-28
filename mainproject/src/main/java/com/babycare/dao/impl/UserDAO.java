@@ -53,21 +53,16 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 
 	@Override
 	public BaseModel register(User user) {
-		if (user == null) {
+		if (!validateUser(false, user)) {
 			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
 		} else {
-			if (validateUser(false, user)) {
-				return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
+			BaseModel model = getUserByEmailAndProvider(user);
+			if (model instanceof User) {
+				return new Error(ErrorConstant.ERROR_USER_EXIST, ErrorConstant.ERROR_USER_EXIST_MESSAGE);
 			} else {
-				BaseModel model = getUserByEmailAndProvider(user);
-				if (model instanceof User) {
-					return new Error(ErrorConstant.ERROR_USER_EXIST, ErrorConstant.ERROR_USER_EXIST_MESSAGE);
-				} else {
-					return createUser(user);
-				}
+				return createUser(user);
 			}
 		}
-		
 	}
 
 	private BaseModel createUser(User user) {
@@ -171,10 +166,20 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 		if (user == null) {
 			return false;
 		} else {
-			if (isCheckId ) {
-				return (user.getUserId() != null);
+			if (isCheckId && user.getUserId() == null) {
+				return false;
 			}
-			return (Utils.isValidEmailAddress(user.getEmail()) && StringUtils.isNotEmpty(user.getName()) && StringUtils.isNotEmpty(user.getProvider()));
+			if (!Utils.isValidEmailAddress(user.getEmail())) {
+				return false;
+			}
+			if (StringUtils.isEmpty(user.getName())) {
+				return false;
+			}
+			if (StringUtils.isEmpty(user.getProvider())) {
+				return false;
+			}
 		}
+		return true;
 	}
+	
 }
