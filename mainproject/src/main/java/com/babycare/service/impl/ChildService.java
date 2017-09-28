@@ -28,8 +28,8 @@ public class ChildService extends AbstractJpaService<Child> implements IChildSer
 	}
 
 	@Override
-	public BaseModel removeChild(Child child) {
-		return childDAO.removeChild(child);
+	public BaseModel removeChildById(Child child) {
+		return childDAO.removeChildById(child);
 	}
 
 	@Override

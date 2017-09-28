@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,6 @@ import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ResultList;
 import com.babycare.model.entity.Child;
-import com.babycare.model.entity.User;
 import com.babycare.service.IChildService;
 
 @RestController(value = "childController")
@@ -48,6 +48,12 @@ public class ChildController {
 		return Response(model);
 	}
 
+	@DeleteMapping(value = "/remove/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
+	public @ResponseBody ResponseEntity<BaseModel> removeChildById(@RequestBody Child body) {
+		BaseModel model = childService.removeChildById(body);
+		return Response(model);
+	}
+	
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof Child) {
 			return new ResponseEntity<BaseModel>((Child) model, HttpStatus.OK);

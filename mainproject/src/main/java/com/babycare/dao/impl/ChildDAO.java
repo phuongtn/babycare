@@ -90,8 +90,22 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 
 
 	@Override
-	public BaseModel removeChild(Child child) {
-		return null;
+	public BaseModel removeChildById(Child child) {
+		if (child == null || child.getChildId() == null) {
+			return new Error(ErrorConstant.ERROR_INPUT_ERROR, ErrorConstant.ERROR_INPUT_ERROR_MESSAGE);
+		} else {
+			BaseModel model  = getChildById(child);
+			if (model instanceof Child) {
+				try {
+					deleteById(child.getChildId());
+				} catch(Exception e) {
+					return new Error(ErrorConstant.ERROR_REMOVE_CHILD, ErrorConstant.ERROR_REMOVE_CHILD_MESSAGE);
+				}
+				return (Child) model;
+			} else {
+				return model;
+			}
+		}
 	}
 	
 
@@ -137,7 +151,7 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 					return new ResultList<BaseModel>(new ArrayList<>());
 				}
 			} catch (Exception e) {
-				return new ResultList<BaseModel>(new ArrayList<>());
+				return new Error(ErrorConstant.ERROR_FETCH_CHILD, ErrorConstant.ERROR_FETCH_CHILD_MESSAGE);
 			}
 		}
 	}
