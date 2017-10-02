@@ -20,7 +20,7 @@ import com.babycare.model.entity.Child;
 import com.babycare.model.entity.User;
 
 @Repository
-@Transactional
+/*@Transactional*/
 @Qualifier("childDAO")
 public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 	@Autowired

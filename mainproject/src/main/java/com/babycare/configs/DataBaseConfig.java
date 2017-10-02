@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.mariadb.jdbc.MySQLDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,6 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @EnableTransactionManagement
 public class DataBaseConfig {
-
 	@Autowired
 	private Environment env;
 	@Autowired
@@ -35,13 +35,30 @@ public class DataBaseConfig {
      */
     @Bean
     public DataSource dataSource() {
-        final HikariDataSource ds = new HikariDataSource();
+ /*       final HikariDataSource ds = new HikariDataSource();
         ds.setMaximumPoolSize(100);
         ds.setDataSourceClassName(env.getProperty("db.datasource"));
         ds.addDataSourceProperty("url", env.getProperty("db.url"));
         ds.addDataSourceProperty("user", env.getProperty("db.username"));
         ds.addDataSourceProperty("password", env.getProperty("db.password"));
-        return ds;
+        return ds;*/
+  
+    	final HikariDataSource ds = new HikariDataSource();
+    	ds.setJdbcUrl(env.getProperty("db.jdbcdriver"));
+    	ds.setUsername(env.getProperty("db.username"));
+    	ds.setPassword(env.getProperty("db.password"));  
+    	ds.setMaximumPoolSize(100);
+    	ds.setDriverClassName("com.mysql.jdbc.Driver");
+    	ds.addDataSourceProperty("cachePrepStmts", "true");
+    	ds.addDataSourceProperty("prepStmtCacheSize", "250");
+    	ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+    	return ds;
+		/*DriverManagerDataSource dataSource = new DriverManagerDataSource();
+		dataSource.setDriverClassName(env.getProperty("db.driver"));
+		dataSource.setUrl(env.getProperty("db.url"));
+		dataSource.setUsername(env.getProperty("db.username"));
+		dataSource.setPassword(env.getProperty("db.password"));
+		return dataSource;*/
     }
 
     /**

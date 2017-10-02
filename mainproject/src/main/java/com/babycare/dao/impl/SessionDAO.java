@@ -18,7 +18,7 @@ import com.babycare.model.entity.Session;
 import com.babycare.model.entity.User;
 
 @Repository
-@Transactional
+/*@Transactional*/
 @Qualifier("sessionDAO")
 public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 	@Autowired

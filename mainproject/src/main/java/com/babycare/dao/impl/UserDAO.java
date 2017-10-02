@@ -17,7 +17,7 @@ import com.babycare.model.ErrorConstant;
 import com.babycare.model.entity.User;
 
 @Repository
-@Transactional
+/*@Transactional*/
 @Qualifier("userDAO")
 public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 	public UserDAO() {
