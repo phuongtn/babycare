@@ -8,6 +8,7 @@ import com.babycare.dao.IOperations;
 import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
 import com.babycare.model.entity.User;
+import com.babycare.model.payload.UserPayload;
 import com.babycare.service.AbstractJpaService;
 import com.babycare.service.IUserService;
 
@@ -43,13 +44,13 @@ public class UserService extends AbstractJpaService<User> implements IUserServic
 	}
 
 	@Override
-	public BaseModel getUserByUserId(User user) {
+	public BaseModel getUserByUserId(UserPayload user) {
 		return userDao.getUserByUserId(user);
 	}
 
 	@Override
-	public BaseModel getUserByEmailAndProvider(User user) {
-		return userDao.getUserByEmailAndProvider(user);
+	public BaseModel getUserByEmailAndProvider(UserPayload payload) {
+		return userDao.getUserByEmailAndProvider(payload);
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import com.babycare.dao.IOperations;
 import com.babycare.dao.ISessionDAO;
 import com.babycare.model.BaseModel;
 import com.babycare.model.entity.Session;
+import com.babycare.model.payload.SessionPayload;
 import com.babycare.service.AbstractJpaService;
 import com.babycare.service.ISessionService;
 
@@ -37,43 +38,43 @@ public class SessionService extends AbstractJpaService<Session> implements ISess
 	}
 
 	@Override
-	public BaseModel getSessionBySessionId(Session session) {
-		return sessionDAO.getSessionBySessionId(session);
+	public BaseModel getSessionBySessionId(SessionPayload payload) {
+		return sessionDAO.getSessionBySessionId(payload);
 	}
 
 	@Override
-	public BaseModel getSessionByHardwareId(Session session) {
-		return sessionDAO.getSessionByHardwareId(session);
+	public BaseModel getSessionByHardwareId(SessionPayload payload) {
+		return sessionDAO.getSessionByHardwareId(payload);
 	}
 
 	@Override
-	public BaseModel loginBySessionId(Session session) {
-		return sessionDAO.loginBySessionId(session);
+	public BaseModel loginBySessionId(SessionPayload payload) {
+		return sessionDAO.loginBySessionId(payload);
 	}
 
 	@Override
-	public BaseModel logoutBySessionId(Session session) {
-		return sessionDAO.logoutBySessionId(session);
+	public BaseModel logoutBySessionId(SessionPayload payload) {
+		return sessionDAO.logoutBySessionId(payload);
 	}
 
 	@Override
-	public BaseModel loginByHardwareId(Session session) {
-		return sessionDAO.loginByHardwareId(session);
+	public BaseModel loginByHardwareId(SessionPayload payload) {
+		return sessionDAO.loginByHardwareId(payload);
 	}
 
 	@Override
-	public BaseModel logoutByHardwareId(Session session) {
-		return sessionDAO.logoutByHardwareId(session);
+	public BaseModel logoutByHardwareId(SessionPayload payload) {
+		return sessionDAO.logoutByHardwareId(payload);
 	}
 
 	@Override
-	public BaseModel updatePushIdBySessionId(Session session) {
-		return sessionDAO.updatePushIdBySessionId(session);
+	public BaseModel updatePushIdBySessionId(SessionPayload payload) {
+		return sessionDAO.updatePushIdBySessionId(payload);
 	}
 
 	@Override
-	public BaseModel updatePushIdByHardwareId(Session session) {
-		return sessionDAO.updatePushIdByHardwareId(session);
+	public BaseModel updatePushIdByHardwareId(SessionPayload payload) {
+		return sessionDAO.updatePushIdByHardwareId(payload);
 	}
 
 }

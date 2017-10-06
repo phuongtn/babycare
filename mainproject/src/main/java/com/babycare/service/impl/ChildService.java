@@ -8,6 +8,7 @@ import com.babycare.dao.IChildDAO;
 import com.babycare.dao.IOperations;
 import com.babycare.model.BaseModel;
 import com.babycare.model.entity.Child;
+import com.babycare.model.payload.ChildPayload;
 import com.babycare.service.AbstractJpaService;
 import com.babycare.service.IChildService;
 
@@ -28,8 +29,8 @@ public class ChildService extends AbstractJpaService<Child> implements IChildSer
 	}
 
 	@Override
-	public BaseModel removeChildById(Child child) {
-		return childDAO.removeChildById(child);
+	public BaseModel removeChildById(ChildPayload payload) {
+		return childDAO.removeChildById(payload);
 	}
 
 	@Override
@@ -43,12 +44,12 @@ public class ChildService extends AbstractJpaService<Child> implements IChildSer
 	}
 
 	@Override
-	public BaseModel getChildById(Child child) {
-		return childDAO.getChildById(child);
+	public BaseModel getChildById(ChildPayload payload) {
+		return childDAO.getChildById(payload);
 	}
 
 	@Override
-	public BaseModel fetchChildrenByUserId(Child child) {
-		return childDAO.fetchChildrenByUserId(child);
+	public BaseModel fetchChildrenByUserId(ChildPayload payload) {
+		return childDAO.fetchChildrenByUserId(payload);
 	}
 }

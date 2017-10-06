@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.entity.User;
+import com.babycare.model.payload.UserPayload;
 import com.babycare.service.IUserService;
 
 @RestController(value = "userController")
@@ -30,14 +31,14 @@ public class UserController {
 	}
 
 	@PostMapping(value = "/get/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> getUserByUserId(@RequestBody User body) {
-		BaseModel model = userService.getUserByUserId(body);
+	public @ResponseBody ResponseEntity<BaseModel> getUserByUserId(@RequestBody UserPayload payload) {
+		BaseModel model = userService.getUserByUserId(payload);
 		return Response(model);
 	}
 
 	@PostMapping(value = "/get/by/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> getUserByEmailAndProvider(@RequestBody User body) {
-		BaseModel model = userService.getUserByEmailAndProvider(body);
+	public @ResponseBody ResponseEntity<BaseModel> getUserByEmailAndProvider(@RequestBody UserPayload payload) {
+		BaseModel model = userService.getUserByEmailAndProvider(payload);
 		return Response(model);
 	}
 
