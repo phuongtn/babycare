@@ -1,17 +1,17 @@
 package com.babycare.dao;
 
 import com.babycare.model.BaseModel;
-import com.babycare.model.entity.Session;
-import com.babycare.model.payload.SessionPayload;
+import com.babycare.model.entity.SessionEntity;
+import com.babycare.model.payload.Session;
 
-public interface ISessionDAO extends IOperations<Session> {
+public interface ISessionDAO extends IOperations<SessionEntity> {
 	BaseModel addOrUpdateSession(Session session);
-	BaseModel getSessionBySessionId(SessionPayload payload);
-	BaseModel getSessionByHardwareId(SessionPayload payload);
-	BaseModel loginBySessionId(SessionPayload payload);
-	BaseModel logoutBySessionId(SessionPayload payload);
-	BaseModel loginByHardwareId(SessionPayload payload);
-	BaseModel logoutByHardwareId(SessionPayload payload);
-	BaseModel updatePushIdBySessionId(SessionPayload payload);
-	BaseModel updatePushIdByHardwareId(SessionPayload payload);
+	BaseModel getSessionBySessionId(Session payload);
+	BaseModel getSessionByHardwareId(Session payload);
+	BaseModel loginBySessionId(Session payload);
+	BaseModel logoutBySessionId(Session payload);
+	BaseModel loginByHardwareId(Session payload);
+	BaseModel logoutByHardwareId(Session payload);
+	BaseModel updatePushIdBySessionId(Session payload);
+	BaseModel updatePushIdByHardwareId(Session payload);
 }

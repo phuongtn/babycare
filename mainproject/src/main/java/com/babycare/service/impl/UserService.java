@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service;
 import com.babycare.dao.IOperations;
 import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
-import com.babycare.model.entity.User;
-import com.babycare.model.payload.UserPayload;
+import com.babycare.model.entity.UserEntity;
+import com.babycare.model.payload.User;
 import com.babycare.service.AbstractJpaService;
 import com.babycare.service.IUserService;
 
 @Service(value = "userService")
-public class UserService extends AbstractJpaService<User> implements IUserService {
+public class UserService extends AbstractJpaService<UserEntity> implements IUserService {
 	@Autowired
 	@Qualifier("userDAO")
 	private IUserDao userDao;
@@ -24,17 +24,17 @@ public class UserService extends AbstractJpaService<User> implements IUserServic
 	}
 
 	@Override
-	public User createEntity(User entity) {
+	public UserEntity createEntity(UserEntity entity) {
 		return userDao.createEntity(entity);
 	}
 
 	@Override
-	protected IOperations<User> getDao() {
+	protected IOperations<UserEntity> getDao() {
 		return userDao;
 	}
 
 	@Override
-	public User updateEntity(User entity) {
+	public UserEntity updateEntity(UserEntity entity) {
 		return userDao.updateEntity(entity);
 	}
 
@@ -44,12 +44,12 @@ public class UserService extends AbstractJpaService<User> implements IUserServic
 	}
 
 	@Override
-	public BaseModel getUserByUserId(UserPayload user) {
+	public BaseModel getUserByUserId(User user) {
 		return userDao.getUserByUserId(user);
 	}
 
 	@Override
-	public BaseModel getUserByEmailAndProvider(UserPayload payload) {
+	public BaseModel getUserByEmailAndProvider(User payload) {
 		return userDao.getUserByEmailAndProvider(payload);
 	}
 

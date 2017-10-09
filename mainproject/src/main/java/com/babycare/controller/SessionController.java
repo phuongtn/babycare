@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
-import com.babycare.model.entity.Session;
-import com.babycare.model.payload.SessionPayload;
+import com.babycare.model.entity.SessionEntity;
+import com.babycare.model.payload.Session;
 import com.babycare.service.ISessionService;
 
 @RestController(value = "sessionController")
@@ -32,55 +32,55 @@ public class SessionController {
 
 
 	@PostMapping(value = "/by/sessionid", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> getSessionBySessionId(@RequestBody SessionPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> getSessionBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.getSessionBySessionId(body);
 		return Response(model);
 	}
 	
 	@PostMapping(value = "/by/hardwareid", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> getSessionByHardwareId(@RequestBody SessionPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> getSessionByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.getSessionByHardwareId(body);
 		return Response(model);
 	}
 	
 	@PutMapping(value = "/update/status/signin/by/sessionid", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> loginBySessionId(@RequestBody SessionPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> loginBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.loginBySessionId(body);
 		return Response(model);
 	}
 	
 	@PutMapping(value = "/update/status/signout/by/sessionid", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> logoutBySessionId(@RequestBody SessionPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> logoutBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.logoutBySessionId(body);
 		return Response(model);
 	}
 	
 	@PutMapping(value = "/update/status/signin/by/hardwareid", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> loginByHardwareId(@RequestBody SessionPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> loginByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.loginByHardwareId(body);
 		return Response(model);
 	}
 	
 	@PutMapping(value = "/update/status/signout/by/hardwareid", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> logoutByHardwareId(@RequestBody SessionPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> logoutByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.logoutByHardwareId(body);
 		return Response(model);
 	}
 	
 	@PutMapping(value = "/update/pushid/by/sessionid", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> updatePushIdBySessionId(@RequestBody SessionPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> updatePushIdBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.updatePushIdBySessionId(body);
 		return Response(model);
 	}
 	
 	@PutMapping(value = "/update/pushid/by/hardwareid", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> updatePushIdByHardwareId(@RequestBody SessionPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> updatePushIdByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.updatePushIdByHardwareId(body);
 		return Response(model);
 	}
 
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
-		if (model instanceof Session) {
+		if (model instanceof SessionEntity) {
 			return new ResponseEntity<BaseModel>((Session) model, HttpStatus.OK);
 		} else if (model instanceof Error) {
 			return new ResponseEntity<BaseModel>((Error) model, HttpStatus.CONFLICT);

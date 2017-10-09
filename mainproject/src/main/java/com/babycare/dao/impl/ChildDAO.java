@@ -4,31 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.babycare.dao.AbstractJpaDao;
 import com.babycare.dao.IChildDAO;
-import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
-import com.babycare.model.Error;
 import com.babycare.model.ErrorConstant;
 import com.babycare.model.ResultList;
-import com.babycare.model.entity.Child;
-import com.babycare.model.entity.User;
-import com.babycare.model.payload.ChildPayload;
+
+import com.babycare.model.entity.ChildEntity;
+import com.babycare.model.payload.Child;
 
 @Repository
 @Qualifier("childDAO")
-public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
-	@Autowired
-	@Qualifier("userDAO")
-	private IUserDao userDao;
-	
+public class ChildDAO extends AbstractJpaDao<ChildEntity> implements IChildDAO {
 	public ChildDAO() {
 		super();
-		setClazz(Child.class);
+		setClazz(ChildEntity.class);
 	}
 
 	@Override
@@ -40,10 +33,10 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 			if (userId == null) {
 				return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
 			} else {
-				Child childCreated = null;
+				ChildEntity childCreated = null;
 				String exception = null;
 				try {
-					childCreated = createEntity(child);
+					childCreated = createEntity(new ChildEntity(child));
 				}catch (Exception e) {
 					childCreated = null;
 					exception = e.getMessage();
@@ -67,10 +60,10 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 				child.getBabyType() == null || StringUtils.isBlank(child.getName())) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
-			Child childCreated = null;
+			ChildEntity childCreated = null;
 			String exception = null;
 			try {
-				childCreated = updateEntity(child);
+				childCreated = updateEntity(new ChildEntity(child));
 			}catch (Exception e) {
 				childCreated = null;
 				exception = e.getMessage();
@@ -89,18 +82,18 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 
 
 	@Override
-	public BaseModel removeChildById(ChildPayload payload) {
+	public BaseModel removeChildById(Child payload) {
 		if (payload == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
 			BaseModel model  = getChildById(payload);
-			if (model instanceof Child) {
+			if (model instanceof ChildEntity) {
 				try {
 					deleteById(payload.getChildId());
 				} catch(Exception e) {
 					return ErrorConstant.getError(ErrorConstant.ERROR_REMOVE_CHILD);
 				}
-				return (Child) model;
+				return (ChildEntity) model;
 			} else {
 				return model;
 			}
@@ -109,7 +102,7 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 	
 
 	@Override
-	public BaseModel getChildById(ChildPayload payload) {
+	public BaseModel getChildById(Child payload) {
 		if (payload == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
@@ -122,7 +115,7 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 		if (id != null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
-			Child childEntity = null;
+			ChildEntity childEntity = null;
 			String exception = null;
 			try {
 				childEntity = findOne(id);
@@ -143,12 +136,12 @@ public class ChildDAO extends AbstractJpaDao<Child> implements IChildDAO {
 	}
 	
 	@Override
-	public BaseModel fetchChildrenByUserId(ChildPayload payload) {
+	public BaseModel fetchChildrenByUserId(Child payload) {
 		if (payload == null || payload.getUserId() == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
 			Long userId = payload.getUserId();
-			String hql = "FROM Child as child WHERE child.userId = ?";
+			String hql = "FROM ChildEntity as child WHERE child.userId = ?";
 			try {
 				List<BaseModel> result = (List<BaseModel>)em.createQuery(hql).setParameter(0, userId).getResultList();
 				if (result != null || !result.isEmpty()) {

@@ -1,7 +1,7 @@
 package com.babycare.dao.impl;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -13,13 +13,13 @@ import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ErrorConstant;
 import com.babycare.model.UserConstant;
-import com.babycare.model.entity.Session;
-import com.babycare.model.entity.User;
-import com.babycare.model.payload.SessionPayload;
+import com.babycare.model.entity.SessionEntity;
+import com.babycare.model.entity.UserEntity;
+import com.babycare.model.payload.Session;
 
 @Repository
 @Qualifier("sessionDAO")
-public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
+public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessionDAO {
 	@Autowired
 	@Qualifier("userDAO")
 	private IUserDao userDao;
@@ -27,10 +27,10 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 
 	public SessionDAO() {
 		super();
-		setClazz(Session.class);
+		setClazz(SessionEntity.class);
 	}
 
-	private BaseModel updateSessionWithSessionId(Session session) {
+	private BaseModel updateSessionWithSessionId(SessionEntity session) {
 		if (session == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
@@ -40,8 +40,8 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 			Long sessionId = session.getSessionId();
 			if (StringUtils.isNotEmpty(hardwareId) || StringUtils.isNotEmpty(platform) || status != null) {
 				String exception = null;
-				Session sessionEntityUpdated = null;
-				Session sessionEntity = findOne(sessionId);
+				SessionEntity sessionEntityUpdated = null;
+				SessionEntity sessionEntity = findOne(sessionId);
 				if (sessionEntity != null) {
 					session.setUser(sessionEntity.getUser());
 					session.setSessionId(sessionEntity.getSessionId());
@@ -81,12 +81,12 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 				return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
 			} else if (session.getSessionId() != null) {
 				// Update if sessionId != null
-				return updateSessionWithSessionId(session);
+				return updateSessionWithSessionId(new SessionEntity(session));
 			} else {
 				BaseModel sessionEntity = getSessionByHardwareId(session.getHardwareId());
 				if (sessionEntity instanceof Error) {
 					// Add session id not found session by hardwareId
-					return addSession(userId, session);
+					return addSession(userId, new SessionEntity(session));
 				} else {
 					// Add session id not found session by hardwareId
 					String hardwareId = session.getHardwareId();
@@ -94,9 +94,13 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 					String pushId = session.getPushId();
 					Integer status = session.getStatus();
 					if (StringUtils.isNotEmpty(hardwareId) || StringUtils.isNotEmpty(platform) || status != null) {
-						session.setUser(((Session) sessionEntity).getUser());
-						session.setSessionId(((Session) sessionEntity).getSessionId());
-						return updateSession(session);
+						SessionEntity  updatedEntity = (SessionEntity) sessionEntity;
+						updatedEntity.setHardwareId(hardwareId);
+						updatedEntity.setPlatform(platform);
+						updatedEntity.setPushId(pushId);
+						updatedEntity.setStatus(status);
+						updatedEntity.setUserId(userId);
+						return updateSession(updatedEntity);
 					} else {
 						return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 					}
@@ -107,7 +111,7 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 	}
 
 	private BaseModel updateSession(Session session) {
-		Session sessionEntityUpdated = updateEntity(session);
+		SessionEntity sessionEntityUpdated = updateEntity(new SessionEntity(session));
 		if (sessionEntityUpdated != null) {
 			return sessionEntityUpdated;
 		} else {
@@ -115,13 +119,13 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 		}
 	}
 
-	private BaseModel addSession(Long userId, Session session) {
+	private BaseModel addSession(Long userId, SessionEntity session) {
 		String hardwareId = session.getHardwareId();
 		String platform = session.getPlatform();
 		Integer status = session.getStatus();
 		if (StringUtils.isNotEmpty(hardwareId) || StringUtils.isNotEmpty(platform)
 				 || status != null) {
-			User userEntity = null;
+			UserEntity userEntity = null;
 			String exception = null;
 			Session sessionEntityAdded;
 			try {
@@ -155,19 +159,27 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 	}
 
 	@Override
-	public BaseModel getSessionBySessionId(SessionPayload payload) {
+	public BaseModel getSessionBySessionId(Session payload) {
 		if (payload == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_SESSION_NOT_EXIST);
 		} else {
 			Long sessionId = payload.getSessionId();
-			return getSessionById(sessionId);
+			BaseModel model = getSessionById(sessionId);
+			if (model instanceof SessionEntity) {
+				SessionEntity entity = (SessionEntity) model;
+				entity.setUserId(entity.getUser() != null ? entity.getUser().getUserId() : null);
+				return entity;
+			} else {
+				return model;
+			}
 		}
 	}
 
 	private BaseModel getSessionById(Long id) {
 		if (id != null) {
-			Session sessionEntity = findOne(id);
+			SessionEntity sessionEntity = findOne(id);
 			if (sessionEntity != null) {
+				sessionEntity.setUserId(sessionEntity.getUser() != null? sessionEntity.getUser().getUserId() : null);
 				return sessionEntity;
 			} else {
 				return ErrorConstant.getError(ErrorConstant.ERROR_SESSION_NOT_EXIST);
@@ -178,7 +190,7 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 	}
 
 	@Override
-	public BaseModel getSessionByHardwareId(SessionPayload payload) {
+	public BaseModel getSessionByHardwareId(Session payload) {
 		if (payload == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_SESSION_NOT_EXIST);
 		} else {
@@ -189,10 +201,10 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 
 	private BaseModel getSessionByHardwareId(String hardwareId) {
 		if (StringUtils.isNotEmpty(hardwareId)) {
-			String hql = "FROM Session WHERE hardwareId = ?";
-			Session entity = null;
+			String hql = "FROM SessionEntity WHERE hardwareId = ?";
+			SessionEntity entity = null;
 			try {
-				entity = (Session) em.createQuery(hql).setParameter(0, hardwareId).getSingleResult();
+				entity = (SessionEntity) em.createQuery(hql).setParameter(0, hardwareId).getSingleResult();
 			} catch (Exception e) {
 				entity = null;
 				return ErrorConstant.getError(ErrorConstant.ERROR_SESSION_NOT_EXIST, e.getMessage());
@@ -209,51 +221,51 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 	}
 
 	@Override
-	public BaseModel loginBySessionId(SessionPayload payload) {
+	public BaseModel loginBySessionId(Session payload) {
 		BaseModel model = getSessionBySessionId(payload);
-		if (model instanceof Session) {
-			return updateSessionStatus((Session) model, UserConstant.Status.SIGNIN.getValue());
+		if (model instanceof SessionEntity) {
+			return updateSessionStatus((SessionEntity) model, UserConstant.Status.SIGNIN.getValue());
 		} else {
 			return model;
 		}
 	}
 
 	@Override
-	public BaseModel logoutBySessionId(SessionPayload session) {
+	public BaseModel logoutBySessionId(Session session) {
 		BaseModel model = getSessionBySessionId(session);
-		if (model instanceof Session) {
-			return updateSessionStatus((Session) model, UserConstant.Status.SIGNOUT.getValue());
+		if (model instanceof SessionEntity) {
+			return updateSessionStatus((SessionEntity) model, UserConstant.Status.SIGNOUT.getValue());
 		} else {
 			return model;
 		}
 	}
 
 	@Override
-	public BaseModel loginByHardwareId(SessionPayload payload) {
+	public BaseModel loginByHardwareId(Session payload) {
 		BaseModel model = getSessionByHardwareId(payload);
-		if (model instanceof Session) {
-			return updateSessionStatus((Session) model, UserConstant.Status.SIGNIN.getValue());
+		if (model instanceof SessionEntity) {
+			return updateSessionStatus((SessionEntity) model, UserConstant.Status.SIGNIN.getValue());
 		} else {
 			return model;
 		}
 	}
 
 	@Override
-	public BaseModel logoutByHardwareId(SessionPayload payload) {
+	public BaseModel logoutByHardwareId(Session payload) {
 		BaseModel model = getSessionByHardwareId(payload);
-		if (model instanceof Session) {
-			return updateSessionStatus((Session) model, UserConstant.Status.SIGNOUT.getValue());
+		if (model instanceof SessionEntity) {
+			return updateSessionStatus((SessionEntity) model, UserConstant.Status.SIGNOUT.getValue());
 		} else {
 			return model;
 		}
 	}
 
-	private BaseModel updateSessionStatus(Session session, Integer status) {
-		session.setStatus(status);
+	private BaseModel updateSessionStatus(SessionEntity entity, Integer status) {
+		entity.setStatus(status);
 		Session sessionUpdated = null;
 		String exception = null;
 		try {
-			sessionUpdated = updateEntity(session);
+			sessionUpdated = updateEntity(entity);
 		} catch (Exception e) {
 			sessionUpdated = null;
 			exception = e.getMessage();
@@ -270,21 +282,21 @@ public class SessionDAO extends AbstractJpaDao<Session> implements ISessionDAO {
 	}
 
 	@Override
-	public BaseModel updatePushIdBySessionId(SessionPayload payload) {
+	public BaseModel updatePushIdBySessionId(Session payload) {
 		BaseModel model = getSessionBySessionId(payload);
 		return updatePushId(model, payload.getPushId());
 	}
 
 	@Override
-	public BaseModel updatePushIdByHardwareId(SessionPayload payload) {
+	public BaseModel updatePushIdByHardwareId(Session payload) {
 		BaseModel model = getSessionByHardwareId(payload);
 		updatePushId(model, payload.getPushId());
 		return null;
 	}
 
 	private BaseModel updatePushId(BaseModel model, String pushId) {
-		if (model instanceof Session) {
-			Session sessionEntity = (Session) model;
+		if (model instanceof SessionEntity) {
+			SessionEntity sessionEntity = (SessionEntity) model;
 			sessionEntity.setPushId(pushId);
 			Session sessionUpdated = null;
 			String exception = null;

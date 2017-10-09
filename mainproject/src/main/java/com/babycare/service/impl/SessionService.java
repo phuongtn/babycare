@@ -6,14 +6,14 @@ import org.springframework.stereotype.Service;
 import com.babycare.dao.IOperations;
 import com.babycare.dao.ISessionDAO;
 import com.babycare.model.BaseModel;
-import com.babycare.model.entity.Session;
-import com.babycare.model.payload.SessionPayload;
+import com.babycare.model.entity.SessionEntity;
+import com.babycare.model.payload.Session;
 import com.babycare.service.AbstractJpaService;
 import com.babycare.service.ISessionService;
 
 
 @Service(value = "sessionService")
-public class SessionService extends AbstractJpaService<Session> implements ISessionService {
+public class SessionService extends AbstractJpaService<SessionEntity> implements ISessionService {
 	@Autowired
 	@Qualifier("sessionDAO")
 	private ISessionDAO sessionDAO;
@@ -23,57 +23,57 @@ public class SessionService extends AbstractJpaService<Session> implements ISess
 	}
 
 	@Override
-	public Session createEntity(Session entity) {
+	public SessionEntity createEntity(SessionEntity entity) {
 		return sessionDAO.createEntity(entity);
 	}
 
 	@Override
-	protected IOperations<Session> getDao() {
+	protected IOperations<SessionEntity> getDao() {
 		return sessionDAO;
 	}
 
 	@Override
-	public Session updateEntity(Session entity) {
+	public SessionEntity updateEntity(SessionEntity entity) {
 		return sessionDAO.updateEntity(entity);
 	}
 
 	@Override
-	public BaseModel getSessionBySessionId(SessionPayload payload) {
+	public BaseModel getSessionBySessionId(Session payload) {
 		return sessionDAO.getSessionBySessionId(payload);
 	}
 
 	@Override
-	public BaseModel getSessionByHardwareId(SessionPayload payload) {
+	public BaseModel getSessionByHardwareId(Session payload) {
 		return sessionDAO.getSessionByHardwareId(payload);
 	}
 
 	@Override
-	public BaseModel loginBySessionId(SessionPayload payload) {
+	public BaseModel loginBySessionId(Session payload) {
 		return sessionDAO.loginBySessionId(payload);
 	}
 
 	@Override
-	public BaseModel logoutBySessionId(SessionPayload payload) {
+	public BaseModel logoutBySessionId(Session payload) {
 		return sessionDAO.logoutBySessionId(payload);
 	}
 
 	@Override
-	public BaseModel loginByHardwareId(SessionPayload payload) {
+	public BaseModel loginByHardwareId(Session payload) {
 		return sessionDAO.loginByHardwareId(payload);
 	}
 
 	@Override
-	public BaseModel logoutByHardwareId(SessionPayload payload) {
+	public BaseModel logoutByHardwareId(Session payload) {
 		return sessionDAO.logoutByHardwareId(payload);
 	}
 
 	@Override
-	public BaseModel updatePushIdBySessionId(SessionPayload payload) {
+	public BaseModel updatePushIdBySessionId(Session payload) {
 		return sessionDAO.updatePushIdBySessionId(payload);
 	}
 
 	@Override
-	public BaseModel updatePushIdByHardwareId(SessionPayload payload) {
+	public BaseModel updatePushIdByHardwareId(Session payload) {
 		return sessionDAO.updatePushIdByHardwareId(payload);
 	}
 

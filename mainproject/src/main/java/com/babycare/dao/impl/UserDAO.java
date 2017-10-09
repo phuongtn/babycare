@@ -4,6 +4,7 @@ package com.babycare.dao.impl;
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
@@ -13,19 +14,20 @@ import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ErrorConstant;
-import com.babycare.model.entity.User;
-import com.babycare.model.payload.UserPayload;
+
+import com.babycare.model.entity.UserEntity;
+import com.babycare.model.payload.User;
 
 @Repository
 @Qualifier("userDAO")
-public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
+public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 	public UserDAO() {
 		super();
-		setClazz(User.class);
+		setClazz(UserEntity.class);
 	}
 
 	@Override
-	public BaseModel getUserByEmailAndProvider(UserPayload user) {
+	public BaseModel getUserByEmailAndProvider(User user) {
 		if (user != null) {
 			String email = user.getEmail();
 			String provider = user.getProvider();
@@ -37,10 +39,10 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 
 	private BaseModel getUserByEmailAndProvider(String email, String provider) {
 		if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(provider)) {
-			String hql = "FROM User as usr WHERE usr.provider = ? AND usr.email = ?";
+			String hql = "FROM UserEntity as usr WHERE usr.provider = ? AND usr.email = ?";
 			User entity = null;
 			try {
-				entity = (User) em.createQuery(hql).setParameter(0, provider).setParameter(1, email).getSingleResult();
+				entity = (UserEntity) em.createQuery(hql).setParameter(0, provider).setParameter(1, email).getSingleResult();
 			} catch (Exception e) {
 				entity = null;
 			}
@@ -60,10 +62,11 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
 			BaseModel model = getUserByEmailAndProvider(user.getEmail(), user.getProvider());
-			if (model instanceof User) {
+			if (model instanceof UserEntity) {
 				return ErrorConstant.getError(ErrorConstant.ERROR_USER_EXIST);
 			} else {
-				return createUser(user);
+				UserEntity entity = new UserEntity(user);
+				return createUser(entity);
 			}
 		}
 	}
@@ -72,7 +75,7 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 		User userCreated = null;
 		String exception = null;
 		try {
-			userCreated = createEntity(user);
+			userCreated = createEntity((UserEntity) user);
 		} catch (Exception e) {
 			userCreated = null;
 			exception = e.getMessage();
@@ -97,10 +100,10 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 			if (model instanceof Error) {
 				return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
 			} else {
-				User userEntityUpdated = null;
+				UserEntity userEntityUpdated = null;
 				String exception = null;
 				try {
-					User updatedModel = (User) model;
+					UserEntity updatedModel = (UserEntity) model;
 					updatedModel.setDob(user.getDob());
 					updatedModel.setName(user.getName());
 					userEntityUpdated = updateEntity(updatedModel);
@@ -122,11 +125,11 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 	}
 
 	@Override
-	public BaseModel getUserByUserId(UserPayload payload) {
-		if (payload == null) {
+	public BaseModel getUserByUserId(User user) {
+		if (user == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
-			return getUserByUserId(payload.getUserId());
+			return getUserByUserId(user.getUserId());
 		}
 	}
 
@@ -134,7 +137,7 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 		if (id == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
-			User enntity = findOne(id);
+			UserEntity enntity = findOne(id);
 			if (enntity == null) {
 				return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
 			} else {
@@ -151,9 +154,12 @@ public class UserDAO extends AbstractJpaDao<User> implements IUserDao {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
 			BaseModel model = getUserByUserId(user.getUserId());
-			if (model instanceof User) {
+			if (model instanceof UserEntity) {
 				try {
-					userEntityUpdated = updateEntity(user);
+					UserEntity updatedModel = (UserEntity) model;
+					updatedModel.setDob(user.getDob());
+					updatedModel.setName(user.getName());
+					userEntityUpdated = updateEntity(updatedModel);
 				} catch (Exception e) {
 					userEntityUpdated = null;
 					exception = e.getMessage();

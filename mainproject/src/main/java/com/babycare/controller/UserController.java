@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
-import com.babycare.model.entity.User;
-import com.babycare.model.payload.UserPayload;
+import com.babycare.model.entity.UserEntity;
+import com.babycare.model.payload.User;
 import com.babycare.service.IUserService;
 
 @RestController(value = "userController")
@@ -31,13 +31,13 @@ public class UserController {
 	}
 
 	@PostMapping(value = "/get/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> getUserByUserId(@RequestBody UserPayload payload) {
+	public @ResponseBody ResponseEntity<BaseModel> getUserByUserId(@RequestBody User payload) {
 		BaseModel model = userService.getUserByUserId(payload);
 		return Response(model);
 	}
 
 	@PostMapping(value = "/get/by/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> getUserByEmailAndProvider(@RequestBody UserPayload payload) {
+	public @ResponseBody ResponseEntity<BaseModel> getUserByEmailAndProvider(@RequestBody User payload) {
 		BaseModel model = userService.getUserByEmailAndProvider(payload);
 		return Response(model);
 	}
@@ -55,7 +55,7 @@ public class UserController {
 	}
 
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
-		if (model instanceof User) {
+		if (model instanceof UserEntity) {
 			return new ResponseEntity<BaseModel>((User) model, HttpStatus.OK);
 		} else if (model instanceof Error) {
 			return new ResponseEntity<BaseModel>((Error) model, HttpStatus.CONFLICT);

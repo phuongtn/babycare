@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ResultList;
-import com.babycare.model.entity.Child;
-import com.babycare.model.payload.ChildPayload;
+import com.babycare.model.entity.ChildEntity;
+import com.babycare.model.payload.Child;
 import com.babycare.service.IChildService;
 
 @RestController(value = "childController")
@@ -38,25 +38,25 @@ public class ChildController {
 	}
 
 	@PostMapping(value = "/get/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> getChildById(@RequestBody ChildPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> getChildById(@RequestBody Child body) {
 		BaseModel model = childService.getChildById(body);
 		return Response(model);
 	}
 
 	@PostMapping(value = "/fetch/by/userid", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> fetchChildrenByUserId(@RequestBody ChildPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> fetchChildrenByUserId(@RequestBody Child body) {
 		BaseModel model = childService.fetchChildrenByUserId(body);
 		return Response(model);
 	}
 
 	@DeleteMapping(value = "/remove/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
-	public @ResponseBody ResponseEntity<BaseModel> removeChildById(@RequestBody ChildPayload body) {
+	public @ResponseBody ResponseEntity<BaseModel> removeChildById(@RequestBody Child body) {
 		BaseModel model = childService.removeChildById(body);
 		return Response(model);
 	}
 	
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
-		if (model instanceof Child) {
+		if (model instanceof ChildEntity) {
 			return new ResponseEntity<BaseModel>((Child) model, HttpStatus.OK);
 		} else if (model instanceof Error) {
 			return new ResponseEntity<BaseModel>(model, HttpStatus.CONFLICT);
