@@ -11,4 +11,5 @@ public interface IUserDao extends IOperations<UserEntity> {
 	BaseModel getUserByUserId(User user);
 	BaseModel getUserByEmailAndProvider(User user);
 	BaseModel updateUserByUserId(User user);
+	//BaseModel doSignIn(User user);
 }

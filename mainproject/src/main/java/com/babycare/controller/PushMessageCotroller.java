@@ -27,7 +27,7 @@ public class PushMessageCotroller {
 	@Qualifier("CcsClient")
 	private CcsClient ccsClient;
 
-	@PostMapping(value = "/send", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/send", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<Void> send(@RequestBody PushMessage pushMessage) {
 		String messageId = Util.getUniqueMessageId();
 		pushMessage.setMessageId(messageId);

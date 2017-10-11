@@ -25,31 +25,31 @@ public class ChildController {
 	@Qualifier("childService")
 	private IChildService childService;
 
-	@PostMapping(value = "/add", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/add", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> addChild(@RequestBody Child body) {
 		BaseModel model = childService.addChild(body);
 		return Response(model);
 	}
 
-	@PutMapping(value = "/update", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PutMapping(value = "/update", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> updateChild(@RequestBody Child body) {
 		BaseModel model = childService.updateChild(body);
 		return Response(model);
 	}
 
-	@PostMapping(value = "/get/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/get/by/id", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> getChildById(@RequestBody Child body) {
 		BaseModel model = childService.getChildById(body);
 		return Response(model);
 	}
 
-	@PostMapping(value = "/fetch/by/userid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/fetch/by/userid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> fetchChildrenByUserId(@RequestBody Child body) {
 		BaseModel model = childService.fetchChildrenByUserId(body);
 		return Response(model);
 	}
 
-	@DeleteMapping(value = "/remove/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
+	@DeleteMapping(value = "/remove/by/id", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> removeChildById(@RequestBody Child body) {
 		BaseModel model = childService.removeChildById(body);
 		return Response(model);

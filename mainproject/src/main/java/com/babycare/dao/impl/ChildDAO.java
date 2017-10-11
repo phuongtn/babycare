@@ -112,7 +112,7 @@ public class ChildDAO extends AbstractJpaDao<ChildEntity> implements IChildDAO {
 	}
 
 	public BaseModel getChildById(Long id) {
-		if (id != null) {
+		if (id == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
 			ChildEntity childEntity = null;

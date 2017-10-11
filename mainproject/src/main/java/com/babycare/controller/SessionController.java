@@ -24,56 +24,56 @@ public class SessionController {
 	@Qualifier("sessionService")
 	private ISessionService sessionService;
 
-	@PostMapping(value = "/addorupdate", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/addorupdate", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> addorupdate(@RequestBody Session body) {
 		BaseModel model = sessionService.addOrUpdateSession(body);
 		return Response(model);
 	}
 
 
-	@PostMapping(value = "/by/sessionid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/by/sessionid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> getSessionBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.getSessionBySessionId(body);
 		return Response(model);
 	}
 	
-	@PostMapping(value = "/by/hardwareid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/by/hardwareid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> getSessionByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.getSessionByHardwareId(body);
 		return Response(model);
 	}
 	
-	@PutMapping(value = "/update/status/signin/by/sessionid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PutMapping(value = "/update/status/signin/by/sessionid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> loginBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.loginBySessionId(body);
 		return Response(model);
 	}
 	
-	@PutMapping(value = "/update/status/signout/by/sessionid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PutMapping(value = "/update/status/signout/by/sessionid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> logoutBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.logoutBySessionId(body);
 		return Response(model);
 	}
 	
-	@PutMapping(value = "/update/status/signin/by/hardwareid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PutMapping(value = "/update/status/signin/by/hardwareid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> loginByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.loginByHardwareId(body);
 		return Response(model);
 	}
 	
-	@PutMapping(value = "/update/status/signout/by/hardwareid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PutMapping(value = "/update/status/signout/by/hardwareid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> logoutByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.logoutByHardwareId(body);
 		return Response(model);
 	}
 	
-	@PutMapping(value = "/update/pushid/by/sessionid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PutMapping(value = "/update/pushid/by/sessionid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> updatePushIdBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.updatePushIdBySessionId(body);
 		return Response(model);
 	}
 	
-	@PutMapping(value = "/update/pushid/by/hardwareid", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PutMapping(value = "/update/pushid/by/hardwareid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> updatePushIdByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.updatePushIdByHardwareId(body);
 		return Response(model);

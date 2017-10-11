@@ -24,31 +24,31 @@ public class UserController {
 	@Qualifier("userService")
 	private IUserService userService;
 
-	@PostMapping(value = "/register", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/register", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> register(@RequestBody User body) {
 		BaseModel model = userService.register(body);
 		return Response(model);
 	}
 
-	@PostMapping(value = "/get/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/get/by/id", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> getUserByUserId(@RequestBody User payload) {
 		BaseModel model = userService.getUserByUserId(payload);
 		return Response(model);
 	}
 
-	@PostMapping(value = "/get/by/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PostMapping(value = "/get/by/email/provider", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> getUserByEmailAndProvider(@RequestBody User payload) {
 		BaseModel model = userService.getUserByEmailAndProvider(payload);
 		return Response(model);
 	}
 
-	@PutMapping(value = "/update/by/email/provider", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PutMapping(value = "/update/by/email/provider", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> updateByEmailAndProvider(@RequestBody User body) {
 		BaseModel model = userService.updateByEmailAndProvider(body);
 		return Response(model);
 	}
 
-	@PutMapping(value = "/update/by/id", headers = "Accept=application/json", produces = "applicaiton/json")
+	@PutMapping(value = "/update/by/id", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> updateUserByUserId(@RequestBody User body) {
 		BaseModel model = userService.updateUserByUserId(body);
 		return Response(model);
