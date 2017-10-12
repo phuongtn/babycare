@@ -33,6 +33,9 @@ public class ChildDAO extends AbstractJpaDao<ChildEntity> implements IChildDAO {
 			if (userId == null) {
 				return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
 			} else {
+				if (child.getChildId() != null) {
+					child.setChildId((Long) null);
+				}
 				ChildEntity childCreated = null;
 				String exception = null;
 				try {

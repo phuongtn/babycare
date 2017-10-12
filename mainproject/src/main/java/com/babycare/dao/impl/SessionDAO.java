@@ -1,5 +1,7 @@
 package com.babycare.dao.impl;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.lang3.StringUtils;
 //import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,46 +78,92 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 		if (session == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
-			Long userId = session.getUserId();
-			if (userId == null) {
-				return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
-			} else if (session.getSessionId() != null) {
-				// Update if sessionId != null
-				return updateSessionWithSessionId(new SessionEntity(session));
-			} else {
+			if (session.getUser() != null && session.getUser().getUserId() != null) {
 				BaseModel sessionEntity = getSessionByHardwareId(session.getHardwareId());
 				if (sessionEntity instanceof Error) {
-					// Add session id not found session by hardwareId
-					return addSession(userId, new SessionEntity(session));
+					// Session not found so, add session
+					return addSession(new SessionEntity(session));
 				} else {
-					// Add session id not found session by hardwareId
-					String hardwareId = session.getHardwareId();
-					String platform = session.getPlatform();
-					String pushId = session.getPushId();
-					Integer status = session.getStatus();
-					if (StringUtils.isNotEmpty(hardwareId) || StringUtils.isNotEmpty(platform) || status != null) {
-						SessionEntity  updatedEntity = (SessionEntity) sessionEntity;
-						updatedEntity.setHardwareId(hardwareId);
-						updatedEntity.setPlatform(platform);
-						updatedEntity.setPushId(pushId);
-						updatedEntity.setStatus(status);
-						updatedEntity.setUserId(userId);
-						return updateSession(updatedEntity);
+					// sessionId not null, try to add Session with Id
+					return updateSession(session);
+				}
+			} else {
+				Long userId = session.getUserId();
+				if (userId == null) {
+					return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
+				} else if (session.getSessionId() != null) {
+					// Update if sessionId != null
+					return updateSessionWithSessionId(new SessionEntity(session));
+				} else {
+					BaseModel sessionEntity = getSessionByHardwareId(session.getHardwareId());
+					if (sessionEntity instanceof Error) {
+						// Add session id not found session by hardwareId
+						return addSession(userId, new SessionEntity(session));
 					} else {
-						return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
+						// Add session id not found session by hardwareId
+						String hardwareId = session.getHardwareId();
+						String platform = session.getPlatform();
+						String pushId = session.getPushId();
+						Integer status = session.getStatus();
+						if (StringUtils.isNotEmpty(hardwareId) || StringUtils.isNotEmpty(platform) || status != null) {
+							SessionEntity  updatedEntity = (SessionEntity) sessionEntity;
+							updatedEntity.setHardwareId(hardwareId);
+							updatedEntity.setPlatform(platform);
+							updatedEntity.setPushId(pushId);
+							updatedEntity.setStatus(status);
+							updatedEntity.setUserId(userId);
+							return updateSession(updatedEntity);
+						} else {
+							return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
+						}
 					}
 				}
 			}
 		}
-
 	}
 
 	private BaseModel updateSession(Session session) {
-		SessionEntity sessionEntityUpdated = updateEntity(new SessionEntity(session));
+		SessionEntity sessionEntityUpdated = null;
+		try {
+			sessionEntityUpdated = updateEntity(new SessionEntity(session));
+		} catch (Exception e) {
+			sessionEntityUpdated = null;
+		}
 		if (sessionEntityUpdated != null) {
+			sessionEntityUpdated.setUserId(session.getUserId());
 			return sessionEntityUpdated;
 		} else {
 			return ErrorConstant.getError(ErrorConstant.ERROR_UPDATE_SESSION);
+		}
+	}
+
+	private BaseModel addSession(SessionEntity session) {
+		String hardwareId = session.getHardwareId();
+		String platform = session.getPlatform();
+		Integer status = session.getStatus();
+		if (StringUtils.isNotEmpty(hardwareId) || StringUtils.isNotEmpty(platform)
+				 || status != null) {
+			SessionEntity sessionEntityAdded;
+			String exception = null;
+			session.setSessionId(null);
+			try {
+				sessionEntityAdded = createEntity(session);
+				sessionEntityAdded.setUserId(session.getUserId());
+			} catch(Exception e) {
+				sessionEntityAdded = null;
+				exception = e.getMessage();
+			}
+			if (sessionEntityAdded != null) {
+				return sessionEntityAdded;
+			} else {
+				if (StringUtils.isNotEmpty(exception)) {
+					return ErrorConstant.getError(ErrorConstant.ERROR_ADD_SESSION, exception);
+				} else {
+					return ErrorConstant.getError(ErrorConstant.ERROR_ADD_SESSION);
+				}
+			}
+		} else {
+			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		}
 	}
 
@@ -127,7 +175,7 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 				 || status != null) {
 			UserEntity userEntity = null;
 			String exception = null;
-			Session sessionEntityAdded;
+			SessionEntity sessionEntityAdded;
 			try {
 				userEntity = userDao.findOne(userId);
 			} catch (Exception e) {

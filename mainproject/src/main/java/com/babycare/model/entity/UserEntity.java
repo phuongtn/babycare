@@ -19,7 +19,7 @@ public class UserEntity extends User implements Serializable {
 	private static final long serialVersionUID = -3922441868508208542L;
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "userid")
 	public Long getUserId() {
 		return userId;
@@ -47,7 +47,13 @@ public class UserEntity extends User implements Serializable {
 	public String getEmail() {
 		return email;
 	}
-	
+
+	@Override
+	@Column(name = "password")
+	public String getPassword() {
+		return password;
+	}
+
 	@Override
 	public boolean equals(Object rhs) {
 		return EqualsBuilder.reflectionEquals(this, rhs, false);
@@ -73,5 +79,6 @@ public class UserEntity extends User implements Serializable {
 		this.provider = user.getProvider();
 		this.dob = user.getDob();
 		this.userId = user.getUserId();
+		this.password = user.getPassword();
 	}
 }

@@ -30,7 +30,6 @@ public class SessionController {
 		return Response(model);
 	}
 
-
 	@PostMapping(value = "/by/sessionid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> getSessionBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.getSessionBySessionId(body);

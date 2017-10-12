@@ -44,7 +44,7 @@ public class ChildEntity extends Child implements Serializable {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="childid")
 	public Long getChildId() {
 		return childId;

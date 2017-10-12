@@ -30,7 +30,7 @@ public class SessionEntity extends Session implements Serializable {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="sessionid")
 	public Long getSessionId() {
 		return sessionId;
