@@ -1,7 +1,5 @@
 package com.babycare.dao.impl;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.StringUtils;
 //import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -310,7 +308,7 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 
 	private BaseModel updateSessionStatus(SessionEntity entity, Integer status) {
 		entity.setStatus(status);
-		Session sessionUpdated = null;
+		SessionEntity sessionUpdated = null;
 		String exception = null;
 		try {
 			sessionUpdated = updateEntity(entity);
@@ -367,5 +365,4 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 			return model;
 		}
 	}
-
 }

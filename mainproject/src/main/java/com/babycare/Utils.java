@@ -1,7 +1,6 @@
 package com.babycare;
 
 import org.apache.commons.lang3.StringUtils;
-
 public class Utils {
 	public static boolean isValidEmailAddress(String email) {
 		if (StringUtils.isEmpty(email)) {
