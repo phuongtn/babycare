@@ -92,39 +92,6 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 	}
 
 	@Override
-	public BaseModel updateByEmailAndProvider(User user) {
-		if (!validateUser(false, user)) {
-			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
-		} else {
-			BaseModel model = getUserByEmailAndProvider(user.getEmail(), user.getProvider());
-			if (model instanceof Error) {
-				return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
-			} else {
-				UserEntity userEntityUpdated = null;
-				String exception = null;
-				try {
-					UserEntity updatedModel = (UserEntity) model;
-					updatedModel.setDob(user.getDob());
-					updatedModel.setName(user.getName());
-					userEntityUpdated = updateEntity(updatedModel);
-				} catch (Exception e) {
-					userEntityUpdated = null;
-					exception = e.getMessage();
-				}
-				if (userEntityUpdated != null) {
-					return userEntityUpdated;
-				} else {
-					if (StringUtils.isNotEmpty(exception)) {
-						return ErrorConstant.getError(ErrorConstant.ERROR_UPDATE_USER, exception);
-					} else {
-						return ErrorConstant.getError(ErrorConstant.ERROR_UPDATE_USER);
-					}
-				}
-			}
-		}
-	}
-
-	@Override
 	public BaseModel getUserByUserId(User user) {
 		if (user == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
@@ -146,38 +113,7 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 		}
 	}
 
-	@Override
-	public BaseModel updateUserByUserId(@Nonnull User user) {
-		UserEntity userEntityUpdated = null;
-		String exception = null;
-		if (!validateUser(true, user)) {
-			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
-		} else {
-			BaseModel model = getUserByUserId(user.getUserId());
-			if (model instanceof UserEntity) {
-				try {
-					UserEntity updatedModel = (UserEntity) model;
-					updatedModel.setDob(user.getDob());
-					updatedModel.setName(user.getName());
-					userEntityUpdated = updateEntity(updatedModel);
-				} catch (Exception e) {
-					userEntityUpdated = null;
-					exception = e.getMessage();
-				}
-				if (userEntityUpdated != null) {
-					return userEntityUpdated;
-				} else {
-					if (StringUtils.isNotEmpty(exception)) {
-						return ErrorConstant.getError(ErrorConstant.ERROR_UPDATE_USER);
-					} else {
-						return ErrorConstant.getError(ErrorConstant.ERROR_UPDATE_USER, exception);
-					}
-				}
-			} else {
-				return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
-			}
-		}
-	}
+
 	
 	private boolean validateUser(boolean isCheckId, User user) {
 		if (user == null) {
@@ -199,4 +135,50 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 		return true;
 	}
 	
+	@Override
+	public BaseModel updateUserByUserId(@Nonnull User user) {
+		if (!validateUser(true, user)) {
+			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
+		} else {
+			BaseModel model = getUserByUserId(user.getUserId());
+			return updateUser(model, user);
+		}
+	}
+	
+	@Override
+	public BaseModel updateByEmailAndProvider(User user) {
+		if (!validateUser(false, user)) {
+			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
+		} else {
+			BaseModel model = getUserByEmailAndProvider(user.getEmail(), user.getProvider());
+			return updateUser(model, user);
+		}
+	}
+
+	private BaseModel updateUser(BaseModel model, User user) {
+		if (model instanceof Error) {
+			return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
+		} else {
+			UserEntity userEntityUpdated = null;
+			String exception = null;
+			try {
+				UserEntity updatedModel = (UserEntity) model;
+				updatedModel.setDob(user.getDob());
+				updatedModel.setName(user.getName());
+				userEntityUpdated = updateEntity(updatedModel);
+			} catch (Exception e) {
+				userEntityUpdated = null;
+				exception = e.getMessage();
+			}
+			if (userEntityUpdated != null) {
+				return userEntityUpdated;
+			} else {
+				if (StringUtils.isNotEmpty(exception)) {
+					return ErrorConstant.getError(ErrorConstant.ERROR_UPDATE_USER, exception);
+				} else {
+					return ErrorConstant.getError(ErrorConstant.ERROR_UPDATE_USER);
+				}
+			}
+		}
+	}
 }

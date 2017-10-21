@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
+import com.babycare.model.ResultList;
 import com.babycare.model.entity.SessionEntity;
 import com.babycare.model.payload.Session;
 import com.babycare.service.ISessionService;
@@ -92,6 +93,8 @@ public class SessionController {
 			return new ResponseEntity<BaseModel>((Session) model, HttpStatus.OK);
 		} else if (model instanceof Error) {
 			return new ResponseEntity<BaseModel>((Error) model, HttpStatus.CONFLICT);
+		}else if (model instanceof ResultList){
+			return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<BaseModel>((Session) null, HttpStatus.CONFLICT);
 		}

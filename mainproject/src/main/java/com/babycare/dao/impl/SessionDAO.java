@@ -373,7 +373,7 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 
 	@Override
 	public BaseModel getSessionListByUserId(Long userId) {
-		String hql = "FROM SessionEntity WHERE user.userid = ?";
+		String hql = "FROM SessionEntity WHERE user.userId = ?";
 		try {
 			List<BaseModel> result = (List<BaseModel>)em.createQuery(hql).setParameter(0, userId).getResultList();
 			if (result != null || !result.isEmpty()) {
@@ -383,7 +383,7 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 				return new ResultList<BaseModel>(new ArrayList<>());
 			}
 		} catch (Exception e) {
-			return ErrorConstant.getError(ErrorConstant.ERROR_FETCH_CHILD);
+			return ErrorConstant.getError(ErrorConstant.ERROR_FETCH_SESSION);
 		}
 	}
 }
