@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.babycare.model.PushMessage;
-import com.babycare.model.PushMessageFactory;
 import com.wedevol.xmpp.bean.CcsOutMessage;
 import com.wedevol.xmpp.server.CcsClient;
+import com.wedevol.xmpp.util.PushMessageFactory;
 import com.wedevol.xmpp.util.Util;
 
 

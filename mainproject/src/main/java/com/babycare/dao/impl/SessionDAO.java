@@ -1,5 +1,8 @@
 package com.babycare.dao.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 //import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ErrorConstant;
+import com.babycare.model.ResultList;
 import com.babycare.model.UserConstant;
 import com.babycare.model.entity.SessionEntity;
 import com.babycare.model.entity.UserEntity;
@@ -307,11 +311,16 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 	}
 
 	private BaseModel updateSessionStatus(SessionEntity entity, Integer status) {
-		entity.setStatus(status);
 		SessionEntity sessionUpdated = null;
 		String exception = null;
 		try {
-			sessionUpdated = updateEntity(entity);
+			if (status ==  UserConstant.Status.SIGNIN.getValue()) {
+				entity.setStatus(status);
+				sessionUpdated = updateEntity(entity);
+			} else {
+				deleteById(entity.getSessionId());
+				sessionUpdated = entity;
+			}
 		} catch (Exception e) {
 			sessionUpdated = null;
 			exception = e.getMessage();
@@ -319,11 +328,7 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 		if (sessionUpdated != null) {
 			return sessionUpdated;
 		} else {
-			if (StringUtils.isNotEmpty(exception)) {
-				return ErrorConstant.getError(ErrorConstant.ERROR_UPDATE_SESSION_STATUS, exception);
-			} else {
-				return ErrorConstant.getError(ErrorConstant.ERROR_UPDATE_SESSION_STATUS);
-			}
+			return ErrorConstant.getError(ErrorConstant.ERROR_UPDATE_SESSION_STATUS, exception);
 		}
 	}
 
@@ -363,6 +368,22 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 			}
 		} else {
 			return model;
+		}
+	}
+
+	@Override
+	public BaseModel getSessionListByUserId(Long userId) {
+		String hql = "FROM SessionEntity WHERE user.userid = ?";
+		try {
+			List<BaseModel> result = (List<BaseModel>)em.createQuery(hql).setParameter(0, userId).getResultList();
+			if (result != null || !result.isEmpty()) {
+				ResultList<BaseModel> resultList = new ResultList<BaseModel>(result);
+				return resultList;
+			} else {
+				return new ResultList<BaseModel>(new ArrayList<>());
+			}
+		} catch (Exception e) {
+			return ErrorConstant.getError(ErrorConstant.ERROR_FETCH_CHILD);
 		}
 	}
 }

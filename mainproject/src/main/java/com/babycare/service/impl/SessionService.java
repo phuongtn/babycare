@@ -77,4 +77,9 @@ public class SessionService extends AbstractJpaService<SessionEntity> implements
 		return sessionDAO.updatePushIdByHardwareId(payload);
 	}
 
+	@Override
+	public BaseModel getSessionListByUserId(Long userId) {
+		return sessionDAO.getSessionListByUserId(userId);
+	}
+
 }

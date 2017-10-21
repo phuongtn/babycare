@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,46 +37,53 @@ public class SessionController {
 		BaseModel model = sessionService.getSessionBySessionId(body);
 		return Response(model);
 	}
-	
+
 	@PostMapping(value = "/by/hardwareid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> getSessionByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.getSessionByHardwareId(body);
 		return Response(model);
 	}
-	
+
 	@PutMapping(value = "/update/status/signin/by/sessionid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> loginBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.loginBySessionId(body);
 		return Response(model);
 	}
-	
+
 	@PutMapping(value = "/update/status/signout/by/sessionid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> logoutBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.logoutBySessionId(body);
 		return Response(model);
 	}
-	
+
 	@PutMapping(value = "/update/status/signin/by/hardwareid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> loginByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.loginByHardwareId(body);
 		return Response(model);
 	}
-	
+
 	@PutMapping(value = "/update/status/signout/by/hardwareid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> logoutByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.logoutByHardwareId(body);
 		return Response(model);
 	}
-	
+
 	@PutMapping(value = "/update/pushid/by/sessionid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> updatePushIdBySessionId(@RequestBody Session body) {
 		BaseModel model = sessionService.updatePushIdBySessionId(body);
 		return Response(model);
 	}
-	
+
 	@PutMapping(value = "/update/pushid/by/hardwareid", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> updatePushIdByHardwareId(@RequestBody Session body) {
 		BaseModel model = sessionService.updatePushIdByHardwareId(body);
+		return Response(model);
+	}
+
+	@GetMapping(value = "/get/list/session/{userId}")
+	public @ResponseBody ResponseEntity<BaseModel> getSessionListByUserId(
+			@PathVariable("userId") Long userId) {
+		BaseModel model = sessionService.getSessionListByUserId(userId);
 		return Response(model);
 	}
 
