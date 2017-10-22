@@ -15,6 +15,7 @@ import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.entity.UserEntity;
 import com.babycare.model.payload.User;
+import com.babycare.service.ISessionService;
 import com.babycare.service.IUserService;
 
 @RestController(value = "userController")
@@ -23,6 +24,10 @@ public class UserController {
 	@Autowired
 	@Qualifier("userService")
 	private IUserService userService;
+
+	@Autowired
+	@Qualifier("sessionService")
+	private ISessionService sessionService;
 
 	@PostMapping(value = "/register", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> register(@RequestBody User body) {

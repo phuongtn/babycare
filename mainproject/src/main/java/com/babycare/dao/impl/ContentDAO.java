@@ -1,6 +1,7 @@
 package com.babycare.dao.impl;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import com.babycare.dao.AbstractJpaDao;
 import com.babycare.dao.IContentDAO;
@@ -9,6 +10,7 @@ import com.babycare.model.entity.ContentEntity;
 import com.babycare.model.payload.Content;
 
 @Repository
+@Component
 @Qualifier("contentDAO")
 public class ContentDAO extends AbstractJpaDao<ContentEntity> implements IContentDAO {
 

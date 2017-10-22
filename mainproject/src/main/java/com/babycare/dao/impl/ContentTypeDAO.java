@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.babycare.dao.AbstractJpaDao;
@@ -14,6 +15,7 @@ import com.babycare.model.ResultList;
 import com.babycare.model.entity.ContentTypeEntity;
 
 @Repository
+@Component
 @Qualifier("contentTypeDAO")
 public class ContentTypeDAO extends AbstractJpaDao<ContentTypeEntity> implements IContentTypeDAO {
 

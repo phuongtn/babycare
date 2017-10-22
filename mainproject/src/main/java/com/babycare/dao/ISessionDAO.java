@@ -15,4 +15,9 @@ public interface ISessionDAO extends IOperations<SessionEntity> {
 	BaseModel updatePushIdBySessionId(Session payload);
 	BaseModel updatePushIdByHardwareId(Session payload);
 	BaseModel getSessionListByUserId(Long userId);
+	
+	BaseModel addSession(Session session);
+	BaseModel updateSession(Session session);
+	BaseModel updateSessionBySessionId(Session session);
+	BaseModel addSession(Long userId, Session session);
 }

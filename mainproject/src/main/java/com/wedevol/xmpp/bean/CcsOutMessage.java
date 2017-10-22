@@ -40,88 +40,99 @@ public class CcsOutMessage {
 		return to;
 	}
 
-	public void setTo(String to) {
+	public CcsOutMessage setTo(String to) {
 		this.to = to;
+		return this;
 	}
 
 	public String getCondition() {
 		return condition;
 	}
 
-	public void setCondition(String condition) {
+	public CcsOutMessage setCondition(String condition) {
 		this.condition = condition;
+		return this;
 	}
 
 	public String getMessageId() {
 		return messageId;
 	}
 
-	public void setMessageId(String messageId) {
+	public CcsOutMessage setMessageId(String messageId) {
 		this.messageId = messageId;
+		return this;
 	}
 
 	public String getCollapseKey() {
 		return collapseKey;
 	}
 
-	public void setCollapseKey(String collapseKey) {
+	public CcsOutMessage setCollapseKey(String collapseKey) {
 		this.collapseKey = collapseKey;
+		return this;
 	}
 
 	public String getPriority() {
 		return priority;
 	}
 
-	public void setPriority(String priority) {
+	public CcsOutMessage setPriority(String priority) {
 		this.priority = priority;
+		return this;
 	}
 
 	public Boolean isContentAvailable() {
 		return contentAvailable;
 	}
 
-	public void setContentAvailable(Boolean contentAvailable) {
+	public CcsOutMessage setContentAvailable(Boolean contentAvailable) {
 		this.contentAvailable = contentAvailable;
+		return this;
 	}
 
 	public Integer getTimeToLive() {
 		return timeToLive;
 	}
 
-	public void setTimeToLive(Integer timeToLive) {
+	public CcsOutMessage setTimeToLive(Integer timeToLive) {
 		this.timeToLive = timeToLive;
+		return this;
 	}
 
 	public Boolean isDeliveryReceiptRequested() {
 		return deliveryReceiptRequested;
 	}
 
-	public void setDeliveryReceiptRequested(Boolean deliveryReceiptRequested) {
+	public CcsOutMessage setDeliveryReceiptRequested(Boolean deliveryReceiptRequested) {
 		this.deliveryReceiptRequested = deliveryReceiptRequested;
+		return this;
 	}
 
 	public Boolean isDryRun() {
 		return dryRun;
 	}
 
-	public void setDryRun(Boolean dryRun) {
+	public CcsOutMessage setDryRun(Boolean dryRun) {
 		this.dryRun = dryRun;
+		return this;
 	}
 
 	public Map<String, String> getDataPayload() {
 		return dataPayload;
 	}
 
-	public void setDataPayload(Map<String, String> dataPayload) {
+	public CcsOutMessage setDataPayload(Map<String, String> dataPayload) {
 		this.dataPayload = dataPayload;
+		return this;
 	}
 
 	public Map<String, String> getNotificationPayload() {
 		return notificationPayload;
 	}
 
-	public void setNotificationPayload(Map<String, String> notificationPayload) {
+	public CcsOutMessage setNotificationPayload(Map<String, String> notificationPayload) {
 		this.notificationPayload = notificationPayload;
+		return this;
 	}
 
 }

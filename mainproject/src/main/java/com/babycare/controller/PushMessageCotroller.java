@@ -1,4 +1,4 @@
-package com.babycare.controller;
+/*package com.babycare.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,3 +40,4 @@ public class PushMessageCotroller {
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
 }
+*/

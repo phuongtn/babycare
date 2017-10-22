@@ -1,11 +1,13 @@
 package com.babycare.dao.impl;
 
+import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.babycare.Utils;
@@ -14,13 +16,21 @@ import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ErrorConstant;
-
 import com.babycare.model.entity.UserEntity;
 import com.babycare.model.payload.User;
+import com.babycare.service.ISessionService;
+import com.wedevol.xmpp.server.CcsClient;
 
 @Repository
+@Component
 @Qualifier("userDAO")
 public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
+	public static final Logger logger = Logger.getLogger(UserDAO.class.getName());
+
+	@Autowired
+	@Qualifier("sessionService")
+	private ISessionService sessionService;
+
 	public UserDAO() {
 		super();
 		setClazz(UserEntity.class);
@@ -42,7 +52,8 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 			String hql = "FROM UserEntity as usr WHERE usr.provider = ? AND usr.email = ?";
 			UserEntity entity = null;
 			try {
-				entity = (UserEntity) em.createQuery(hql).setParameter(0, provider).setParameter(1, email).getSingleResult();
+				entity = (UserEntity) em.createQuery(hql).setParameter(0, provider).setParameter(1, email)
+						.getSingleResult();
 			} catch (Exception e) {
 				entity = null;
 			}
@@ -113,8 +124,6 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 		}
 	}
 
-
-	
 	private boolean validateUser(boolean isCheckId, User user) {
 		if (user == null) {
 			return false;
@@ -125,32 +134,34 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 			if (!Utils.isValidEmailAddress(user.getEmail())) {
 				return false;
 			}
-			/*if (StringUtils.isEmpty(user.getName())) {
-				return false;
-			}*/
+			/*
+			 * if (StringUtils.isEmpty(user.getName())) { return false; }
+			 */
 			if (StringUtils.isEmpty(user.getProvider())) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	@Override
 	public BaseModel updateUserByUserId(@Nonnull User user) {
 		if (!validateUser(true, user)) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
 			BaseModel model = getUserByUserId(user.getUserId());
+			// model.setSessionId(user.getSessionId());
 			return updateUser(model, user);
 		}
 	}
-	
+
 	@Override
 	public BaseModel updateByEmailAndProvider(User user) {
 		if (!validateUser(false, user)) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
 			BaseModel model = getUserByEmailAndProvider(user.getEmail(), user.getProvider());
+			// model.setSessionId(user.getSessionId());
 			return updateUser(model, user);
 		}
 	}
@@ -166,6 +177,7 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 				updatedModel.setDob(user.getDob());
 				updatedModel.setName(user.getName());
 				userEntityUpdated = updateEntity(updatedModel);
+				// Send Notification
 			} catch (Exception e) {
 				userEntityUpdated = null;
 				exception = e.getMessage();
@@ -181,4 +193,6 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 			}
 		}
 	}
+
+
 }
