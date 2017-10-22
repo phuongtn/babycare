@@ -154,7 +154,7 @@ public class ChildDAO extends AbstractJpaDao<ChildEntity> implements IChildDAO {
 			String hql = "FROM ChildEntity as child WHERE child.userId = ?";
 			try {
 				List<BaseModel> result = (List<BaseModel>)em.createQuery(hql).setParameter(0, userId).getResultList();
-				if (result != null || !result.isEmpty()) {
+				if (result != null && !result.isEmpty()) {
 					ResultList<BaseModel> resultList = new ResultList<BaseModel>(result);
 					return resultList;
 				} else {
