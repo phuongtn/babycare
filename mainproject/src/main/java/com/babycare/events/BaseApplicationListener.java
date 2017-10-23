@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
-import com.babycare.dao.IPushMessageDAO;
 import com.babycare.service.IChildService;
 import com.babycare.service.IPushMessageService;
 import com.babycare.service.ISessionService;

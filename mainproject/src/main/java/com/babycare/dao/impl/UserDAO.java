@@ -19,7 +19,6 @@ import com.babycare.model.ErrorConstant;
 import com.babycare.model.entity.UserEntity;
 import com.babycare.model.payload.User;
 import com.babycare.service.ISessionService;
-import com.wedevol.xmpp.server.CcsClient;
 
 @Repository
 @Component

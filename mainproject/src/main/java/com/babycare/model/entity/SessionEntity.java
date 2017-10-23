@@ -18,7 +18,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.babycare.model.payload.Session;
-import com.babycare.model.payload.User;
 
 @Entity
 @Table(name = "session", catalog = "babycare")
