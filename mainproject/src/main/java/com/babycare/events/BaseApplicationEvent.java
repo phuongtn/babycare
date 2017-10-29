@@ -4,7 +4,7 @@ import org.springframework.context.ApplicationEvent;
 
 import com.babycare.model.BaseModel;
 
-public abstract class BaseApplicationEvent<T extends BaseModel > extends ApplicationEvent {
+public abstract class BaseApplicationEvent<T extends BaseModel> extends ApplicationEvent {
 
 	private static final long serialVersionUID = 1L;
 	protected BaseModel model;

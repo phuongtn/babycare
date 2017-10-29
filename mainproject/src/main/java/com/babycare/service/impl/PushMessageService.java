@@ -8,6 +8,7 @@ import com.babycare.dao.IOperations;
 import com.babycare.dao.IPushMessageDAO;
 import com.babycare.model.BaseModel;
 import com.babycare.model.entity.PushMessageEntity;
+import com.babycare.model.payload.PushMessage;
 import com.babycare.service.AbstractJpaService;
 import com.babycare.service.IPushMessageService;
 
@@ -23,18 +24,23 @@ public class PushMessageService extends AbstractJpaService<PushMessageEntity> im
 	}
 
 	@Override
-	public BaseModel getByMessageId(String messageId) {
-		return pushMessageDAO.getByMessageId(messageId);
+	public BaseModel getByMessage(PushMessage pushMessage) {
+		return pushMessageDAO.getByMessage(pushMessage);
 	}
 
 	@Override
-	public int deleteByMessageId(String messageId) {
-		return pushMessageDAO.deleteByMessageId(messageId);
+	public BaseModel deleteMessage(PushMessage pushMessage) {
+		return pushMessageDAO.deleteMessage(pushMessage);
 	}
 
 	@Override
 	protected IOperations<PushMessageEntity> getDao() {
 		return pushMessageDAO;
+	}
+
+	@Override
+	public BaseModel deleteMessageByPushID(String pushId) {
+		return pushMessageDAO.deleteMessageByPushID(pushId);
 	}
 
 }

@@ -1,41 +1,52 @@
 package com.babycare.controller;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wedevol.xmpp.bean.CcsOutMessage;
-import com.wedevol.xmpp.server.CcsClient;
-import com.wedevol.xmpp.util.PushMessageFactory;
-import com.wedevol.xmpp.util.Util;
-
+import com.babycare.model.BaseModel;
+import com.babycare.model.Error;
+import com.babycare.model.entity.PushMessageEntity;
+import com.babycare.model.payload.PushMessage;
+import com.babycare.model.response.CommonResponse;
+import com.babycare.service.impl.PushMessageService;
 
 @RestController(value = "pushMessageController")
 @RequestMapping("pushmessage")
 public class PushMessageCotroller {
 	@Autowired
-	@Qualifier("CcsClient")
-	private CcsClient ccsClient;
+	@Qualifier("pushMessageService")
+	private PushMessageService pushMessageService;
 
-	@PostMapping(value = "/send", headers = "Accept=application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<Void> send(@RequestBody CcsOutMessage pushMessage) {
-		String messageId = Util.getUniqueMessageId();
-		pushMessage.setMessageId(messageId);
-		Map<String, String> dataPayload = new HashMap<String, String>();
-		dataPayload.put(Util.PAYLOAD_ATTRIBUTE_MESSAGE, "This is a sample message");
-		dataPayload.put(Util.PAYLOAD_ATTRIBUTE_ACTION, "ACCOUNT_UPDATED");
-		CcsOutMessage ccsOutMessage = PushMessageFactory.createSimpleCCsOutMessage(pushMessage.getTo(), messageId, dataPayload);
-		String messagePayload = PushMessageFactory.createMessagePayLoad(ccsOutMessage);
-		ccsClient.send(messagePayload);
-		return new ResponseEntity<Void>(HttpStatus.OK);
+
+	@DeleteMapping(value = "/delete", headers = "Accept=application/json", produces = "application/json")
+	public @ResponseBody ResponseEntity<BaseModel> deleteMessage(@RequestBody PushMessage body) {
+		return Response(pushMessageService.deleteMessage(body));
+
+	}
+
+	@PostMapping(value = "/get", headers = "Accept=application/json", produces = "application/json")
+	public @ResponseBody ResponseEntity<BaseModel> getMessage(@RequestBody PushMessage body) {
+		return Response(pushMessageService.getByMessage(body));
+	}
+	
+	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
+		if (model instanceof PushMessageEntity) {
+			return new ResponseEntity<BaseModel>((PushMessageEntity) model, HttpStatus.OK);
+		} else if (model instanceof Error) {
+			return new ResponseEntity<BaseModel>(model, HttpStatus.CONFLICT);
+		} else if (model instanceof CommonResponse){
+			return new ResponseEntity<BaseModel>((CommonResponse) model, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<BaseModel>((PushMessageEntity) null, HttpStatus.CONFLICT);
+		}
 	}
 }

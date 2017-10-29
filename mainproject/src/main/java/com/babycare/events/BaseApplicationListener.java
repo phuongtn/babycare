@@ -36,7 +36,7 @@ public abstract class BaseApplicationListener implements ApplicationListener<App
 	
 	@Autowired
 	@Qualifier("CcsClient")
-	private CcsClient ccsClient;
+	protected CcsClient ccsClient;
 	
 	public abstract void onApplicationEvent(ApplicationEvent event);
 

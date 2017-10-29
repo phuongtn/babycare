@@ -27,6 +27,9 @@ public class SessionEntity extends Session implements Serializable {
 
 	private UserEntity user;
 
+	@Transient
+	private String oldPushId;
+
 	@Override
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -92,7 +95,6 @@ public class SessionEntity extends Session implements Serializable {
 	public void setUser(UserEntity user) {
 		this.user = user;
 	}
-	
 
 	public SessionEntity(Session session) {
 		this.sessionId = session.getSessionId();
@@ -103,6 +105,15 @@ public class SessionEntity extends Session implements Serializable {
 		this.user = new UserEntity(session.getUser());
 	}
 	
+
+	public String getOldPushId() {
+		return oldPushId;
+	}
+
+	public void setOldPushId(String oldPushId) {
+		this.oldPushId = oldPushId;
+	}
+
 	public SessionEntity() {
 	}
 

@@ -249,6 +249,7 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 		} else {
 			try {
 				delete(entity);
+				entity.setOldPushId(entity.getPushId());
 				sessionUpdated = entity;
 			} catch (Exception e) {
 				sessionUpdated = null;
@@ -279,7 +280,7 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 		if (model instanceof SessionEntity) {
 			SessionEntity sessionEntity = (SessionEntity) model;
 			sessionEntity.setPushId(pushId);
-			Session sessionUpdated = null;
+			SessionEntity sessionUpdated = null;
 			String exception = null;
 			try {
 				sessionUpdated = updateEntity(sessionEntity);
@@ -288,6 +289,7 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 				exception = e.getMessage();
 			}
 			if (sessionUpdated != null) {
+				sessionUpdated.setOldPushId(sessionEntity.getOldPushId());
 				return sessionUpdated;
 			} else {
 				if (StringUtils.isNotEmpty(exception)) {

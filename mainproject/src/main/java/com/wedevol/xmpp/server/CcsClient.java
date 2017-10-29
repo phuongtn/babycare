@@ -186,15 +186,19 @@ public class CcsClient implements PacketListener {
 
 			switch (messageType.toString()) {
 			case "ack":
+				logger.log(Level.INFO, "Handle handleAckReceipt from " + jsonMap.get("from") );
 				handleAckReceipt(jsonMap);
 				break;
 			case "nack":
+				logger.log(Level.INFO, "Handle handleNackReceipt");
 				handleNackReceipt(jsonMap);
 				break;
 			case "receipt":
+				logger.log(Level.INFO, "Handle handleDeliveryReceipt");
 				handleDeliveryReceipt(jsonMap);
 				break;
 			case "control":
+				logger.log(Level.INFO, "Handle handleControlMessage");
 				handleControlMessage(jsonMap);
 				break;
 			default:

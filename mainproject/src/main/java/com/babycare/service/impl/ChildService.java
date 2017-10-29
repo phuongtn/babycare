@@ -2,10 +2,13 @@ package com.babycare.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
 
 import com.babycare.dao.IChildDAO;
 import com.babycare.dao.IOperations;
+import com.babycare.events.ChangeEvent;
 import com.babycare.model.BaseModel;
 import com.babycare.model.entity.ChildEntity;
 import com.babycare.model.payload.Child;
@@ -13,29 +16,39 @@ import com.babycare.service.AbstractJpaService;
 import com.babycare.service.IChildService;
 
 @Service(value = "childService")
-public class ChildService extends AbstractJpaService<ChildEntity> implements IChildService {
+public class ChildService extends AbstractJpaService<ChildEntity> implements IChildService, ApplicationEventPublisherAware {
 	@Autowired
 	@Qualifier("childDAO")
 	private IChildDAO childDAO;
 
+	private ApplicationEventPublisher publisher;
+
 	@Override
 	public BaseModel addChild(Child child) {
-		return childDAO.addChild(child);
+		BaseModel model = childDAO.addChild(child);
+		publishEvent(child.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
 	public BaseModel updateChild(Child child) {
-		return childDAO.updateChild(child);
+		BaseModel model = childDAO.updateChild(child);
+		publishEvent(child.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
 	public BaseModel removeChildById(Child payload) {
-		return childDAO.removeChildById(payload);
+		BaseModel model = childDAO.removeChildById(payload);
+		publishEvent(payload.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
 	public ChildEntity createEntity(ChildEntity entity) {
-		return childDAO.createEntity(entity);
+		BaseModel model = childDAO.createEntity(entity);
+
+		return (ChildEntity) model;
 	}
 
 	@Override
@@ -51,5 +64,16 @@ public class ChildService extends AbstractJpaService<ChildEntity> implements ICh
 	@Override
 	public BaseModel fetchChildrenByUserId(Child payload) {
 		return childDAO.fetchChildrenByUserId(payload);
+	}
+	
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.publisher = publisher;
+	}
+	
+	private void publishEvent(Long requestId, BaseModel model) {
+		if (model instanceof ChildEntity) {
+			model.setRequestBySessionId(requestId);
+			publisher.publishEvent(new ChangeEvent(model));
+		}
 	}
 }

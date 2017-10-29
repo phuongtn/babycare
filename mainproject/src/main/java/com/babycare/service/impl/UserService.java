@@ -26,7 +26,7 @@ public class UserService extends AbstractJpaService<UserEntity> implements IUser
 	private IUserDao userDao;
 
 	private ApplicationEventPublisher publisher;
-	
+
 	@Override
 	public BaseModel register(User user) {
 		return userDao.register(user);
@@ -51,12 +51,7 @@ public class UserService extends AbstractJpaService<UserEntity> implements IUser
 	@Override
 	public BaseModel updateByEmailAndProvider(User user) {
 		BaseModel model = userDao.updateByEmailAndProvider(user);
-		logger.log(Level.INFO, "Prepair Publish Phuong AccountChangeEvent");
-		if (model instanceof UserEntity) {
-			logger.log(Level.INFO, "Publish Phuong AccountChangeEvent");
-			model.setRequestBySessionId(user.getRequestBySessionId());
-			publisher.publishEvent(new ChangeEvent(model));
-		}
+		publishEvent(user.getRequestBySessionId(), model);
 		return model;
 	}
 
@@ -75,16 +70,18 @@ public class UserService extends AbstractJpaService<UserEntity> implements IUser
 	@Override
 	public BaseModel updateUserByUserId(User user) {
 		BaseModel model = userDao.updateUserByUserId(user);
-		logger.log(Level.INFO, "Prepair Publish Phuong AccountChangeEvent");
-		if (model instanceof UserEntity) {
-			logger.log(Level.INFO, "Publish Phuong AccountChangeEvent");
-			model.setRequestBySessionId(user.getRequestBySessionId());
-			publisher.publishEvent(new ChangeEvent(model));
-		}
+		publishEvent(user.getRequestBySessionId(), model);
 		return model;
 	}
 	
 	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
 		this.publisher = publisher;
+	}
+	
+	private void publishEvent(Long requestId, BaseModel model) {
+		if (model instanceof UserEntity) {
+			model.setRequestBySessionId(requestId);
+			publisher.publishEvent(new ChangeEvent(model));
+		}
 	}
 }

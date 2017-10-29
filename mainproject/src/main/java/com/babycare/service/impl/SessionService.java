@@ -3,9 +3,13 @@ package com.babycare.service.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
+
 import com.babycare.dao.IOperations;
 import com.babycare.dao.ISessionDAO;
+import com.babycare.events.ChangeEvent;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ErrorConstant;
@@ -18,7 +22,7 @@ import com.babycare.service.IUserService;
 
 
 @Service(value = "sessionService")
-public class SessionService extends AbstractJpaService<SessionEntity> implements ISessionService {
+public class SessionService extends AbstractJpaService<SessionEntity> implements ISessionService, ApplicationEventPublisherAware{
 	@Autowired
 	@Qualifier("sessionDAO")
 	private ISessionDAO sessionDAO;
@@ -26,6 +30,8 @@ public class SessionService extends AbstractJpaService<SessionEntity> implements
 	@Autowired
 	@Qualifier("userService")
 	private IUserService userService;
+
+	private ApplicationEventPublisher publisher;
 
 	@Override
 	public BaseModel addOrUpdateSession(Session session) {
@@ -105,32 +111,44 @@ public class SessionService extends AbstractJpaService<SessionEntity> implements
 
 	@Override
 	public BaseModel loginBySessionId(Session payload) {
-		return sessionDAO.loginBySessionId(payload);
+		BaseModel model = sessionDAO.loginBySessionId(payload);
+		publishEvent(payload.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
 	public BaseModel logoutBySessionId(Session payload) {
-		return sessionDAO.logoutBySessionId(payload);
+		BaseModel model = sessionDAO.logoutBySessionId(payload);
+		publishEvent(payload.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
 	public BaseModel loginByHardwareId(Session payload) {
-		return sessionDAO.loginByHardwareId(payload);
+		BaseModel model = sessionDAO.loginByHardwareId(payload);
+		publishEvent(payload.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
 	public BaseModel logoutByHardwareId(Session payload) {
-		return sessionDAO.logoutByHardwareId(payload);
+		BaseModel model = sessionDAO.logoutByHardwareId(payload);
+		publishEvent(payload.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
 	public BaseModel updatePushIdBySessionId(Session payload) {
-		return sessionDAO.updatePushIdBySessionId(payload);
+		BaseModel model = sessionDAO.updatePushIdBySessionId(payload);
+		publishEvent(payload.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
 	public BaseModel updatePushIdByHardwareId(Session payload) {
-		return sessionDAO.updatePushIdByHardwareId(payload);
+		BaseModel model = sessionDAO.updatePushIdByHardwareId(payload);
+		publishEvent(payload.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
@@ -140,18 +158,23 @@ public class SessionService extends AbstractJpaService<SessionEntity> implements
 
 	@Override
 	public BaseModel addSession(Session session) {
-		
-		return sessionDAO.addSession(session);
+		BaseModel model = sessionDAO.addSession(session);
+		publishEvent(session.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
 	public BaseModel updateSession(Session session) {
-		return sessionDAO.updateSession(session);
+		BaseModel model = sessionDAO.updateSession(session);
+		publishEvent(session.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
 	public BaseModel updateSessionBySessionId(Session session) {
-		return sessionDAO.updateSessionBySessionId(session);
+		BaseModel model = sessionDAO.updateSessionBySessionId(session);
+		publishEvent(session.getRequestBySessionId(), model);
+		return model;
 	}
 
 	@Override
@@ -194,4 +217,14 @@ public class SessionService extends AbstractJpaService<SessionEntity> implements
 		}
 	}
 
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.publisher = publisher;
+	}
+	
+	private void publishEvent(Long requestId, BaseModel model) {
+		if (model instanceof SessionEntity) {
+			model.setRequestBySessionId(requestId);
+			publisher.publishEvent(new ChangeEvent(model));
+		}
+	}
 }
