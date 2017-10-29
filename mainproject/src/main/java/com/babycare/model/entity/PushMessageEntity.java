@@ -7,6 +7,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -21,6 +24,7 @@ public class PushMessageEntity extends PushMessage implements Serializable {
 	private String action;
 	private DateTime timeStamp;
 	private String pushId;
+	private String sendStatus;
 
 	@Override
 	public PushMessageEntity setMessageId(String messageId) {
@@ -38,7 +42,6 @@ public class PushMessageEntity extends PushMessage implements Serializable {
 	public String getMessageId() {
 		return messageId;
 	}
-
 
 	public PushMessageEntity setPayLoad(String payLoad) {
 		this.payLoad = payLoad;
@@ -59,7 +62,6 @@ public class PushMessageEntity extends PushMessage implements Serializable {
 		return this;
 	}
 
-	
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
 	@Column(name = "timestamp", updatable = false, insertable = false)
 	public DateTime getTimeStamp() {
@@ -81,4 +83,28 @@ public class PushMessageEntity extends PushMessage implements Serializable {
 		return this;
 	}
 
+	@Override
+	public boolean equals(Object rhs) {
+		return EqualsBuilder.reflectionEquals(this, rhs, false);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this, false);
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+
+	@Column(name = "sendstatus")
+	public String getSendStatus() {
+		return sendStatus;
+	}
+
+	public PushMessageEntity setSendStatus(String sendStatus) {
+		this.sendStatus = sendStatus;
+		return this;
+	}
 }

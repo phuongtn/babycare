@@ -1,9 +1,11 @@
 package com.babycare.events;
 
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +21,7 @@ import com.babycare.model.entity.SessionEntity;
 import com.babycare.model.entity.UserEntity;
 import com.wedevol.xmpp.bean.CcsOutMessage;
 import com.wedevol.xmpp.util.PushMessageFactory;
+import com.wedevol.xmpp.util.PushMessageStatus;
 import com.wedevol.xmpp.util.Util;
 
 @Component
@@ -50,7 +53,7 @@ public class ChangeEventListener extends BaseApplicationListener {
 		if (baseModel instanceof ResultList) {
 			com.babycare.model.ResultList<SessionEntity> resultList = (ResultList) baseModel;
 			List<SessionEntity> list = resultList.getResultList();
-			List<String> messages = new ArrayList<String>();
+			Map<String, String> messages = new HashMap<>();
 			for (SessionEntity entity : list) {
 				if (entity.getSessionId() != sessionId) {
 					String messageId = Util.getUniqueMessageId();
@@ -61,15 +64,25 @@ public class ChangeEventListener extends BaseApplicationListener {
 					CcsOutMessage ccsOutMessage = PushMessageFactory.
 							createSimpleCCsOutMessage(entity.getPushId(), messageId, dataPayload);
 					String payLoad = PushMessageFactory.createMessagePayLoad(ccsOutMessage);
-					messages.add(payLoad);
+					messages.put(messageId, payLoad);
 					pushMessageService.createEntity(new PushMessageEntity().
 							setMessageId(messageId).setPayLoad(payLoad).
-							setAction(action).setPushId(entity.getPushId()));
+							setAction(action).setPushId(entity.getPushId()).
+							setSendStatus(PushMessageStatus.SENT.getName()));
 				}
 			}
-			for (String msg : messages) {
-				ccsClient.send(msg);
+			Set<Entry<String, String>> set = messages.entrySet();
+			for (Entry<String, String> entry : set) {
+				String value = entry.getValue();
+				try {
+					ccsClient.send(value);
+				} catch(Exception e) {
+					
+				}
 			}
+			/*for (String msg : messages) {
+				ccsClient.send(msg);
+			}*/
 		}
 	}
 	

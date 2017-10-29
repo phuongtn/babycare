@@ -89,4 +89,9 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 			return new CommonResponse(PushMessageConstant.MESSAGE_NOT_FOUND, true);
 		}
 	}
+
+	@Override
+	public BaseModel updateStatus(String messageId, String status) {
+		return null;
+	}
 }

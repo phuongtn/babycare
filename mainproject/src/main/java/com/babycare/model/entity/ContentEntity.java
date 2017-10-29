@@ -12,6 +12,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.babycare.model.payload.Content;
 
 @Entity
@@ -115,5 +119,20 @@ public class ContentEntity extends Content implements Serializable {
 		.setStart(content.getStart())
 		.setTimeUnit(content.getTimeUnit());
 		 this.contentType = new ContentTypeEntity(content.getContentType());
+	}
+	
+	@Override
+	public boolean equals(Object rhs) {
+		return EqualsBuilder.reflectionEquals(this, rhs, false);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this, false);
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }
