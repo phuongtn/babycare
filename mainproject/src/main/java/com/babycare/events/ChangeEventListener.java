@@ -44,6 +44,8 @@ public class ChangeEventListener extends BaseApplicationListener {
 				if (StringUtils.isNotBlank(entity.getOldPushId())) {
 					pushMessageService.deleteMessageByPushID(entity.getOldPushId());
 				}
+			} else if (baseModel instanceof UnRecoverablePushMessage) {
+				pushMessageService.deleteMessageByMessageId(((UnRecoverablePushMessage) baseModel).getMessageId());
 			}
 		}
 	}
@@ -77,12 +79,9 @@ public class ChangeEventListener extends BaseApplicationListener {
 				try {
 					ccsClient.send(value);
 				} catch(Exception e) {
-					
+					pushMessageService.updateStatus(entry.getKey(), PushMessageStatus.PENDING.getName());
 				}
 			}
-			/*for (String msg : messages) {
-				ccsClient.send(msg);
-			}*/
 		}
 	}
 	

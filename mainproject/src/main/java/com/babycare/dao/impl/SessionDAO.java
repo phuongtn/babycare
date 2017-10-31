@@ -24,10 +24,6 @@ import com.wedevol.xmpp.server.CcsClient;
 @Component
 @Qualifier("sessionDAO")
 public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessionDAO {
-	@Autowired
-	@Qualifier("CcsClient")
-	private CcsClient ccsClient;
-
 	private static Logger LOG = Logger.getLogger(SessionDAO.class);
 
 	public SessionDAO() {

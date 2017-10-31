@@ -23,11 +23,20 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 
 	@Override
 	public BaseModel deleteMessage(PushMessage pushMessage) {
-		if (pushMessage != null && StringUtils.isNotEmpty(pushMessage.getMessageId())) {
+		if (pushMessage != null) {
+			return deleteMessageByMessageId(pushMessage.getMessageId());
+		} else {
+			return new CommonResponse(PushMessageConstant.MESSAGE_NOT_FOUND, true);
+		}
+	}
+
+	@Override
+	public BaseModel deleteMessageByMessageId(String messageId) {
+		if (StringUtils.isNotEmpty(messageId)) {
 			String hql = "DELETE PushMessageEntity WHERE messageId=:messageId";
 			int result = 0;
 			Query query = em.createQuery(hql);
-			query.setParameter("messageId", pushMessage.getMessageId());
+			query.setParameter("messageId", messageId);
 			try {
 				result = query.executeUpdate();
 			} catch (Exception e) {
@@ -50,11 +59,19 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 
 	@Override
 	public BaseModel getByMessage(PushMessage pushMessage) {
-		if (pushMessage != null && StringUtils.isNotEmpty(pushMessage.getMessageId())) {
+		if (pushMessage != null ) {
+			return getByMessageId(pushMessage.getMessageId());
+		} else {
+			return ErrorConstant.getError(ErrorConstant.ERROR_RECORD_NOT_FOUND);
+		}
+	}
+
+	private BaseModel getByMessageId(String messageId) {
+		if (StringUtils.isNotEmpty(messageId)) {
 			String hql = "FROM PushMessageEntity WHERE messageId=:messageId";
 			PushMessageEntity result = null;
 			try {
-				result = (PushMessageEntity) em.createQuery(hql).setParameter("messageId", pushMessage.getMessageId()).getSingleResult();
+				result = (PushMessageEntity) em.createQuery(hql).setParameter("messageId", messageId).getSingleResult();
 			} catch (Exception e) {
 				result = null;
 			}
@@ -66,8 +83,8 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 		} else {
 			return ErrorConstant.getError(ErrorConstant.ERROR_RECORD_NOT_FOUND);
 		}
-	}
 
+	}
 	@Override
 	public BaseModel deleteMessageByPushID(String pushId) {
 		if (StringUtils.isNotEmpty(pushId)) {
@@ -92,6 +109,17 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 
 	@Override
 	public BaseModel updateStatus(String messageId, String status) {
-		return null;
+		if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(status)) {
+			BaseModel baseModel = getByMessageId(messageId);
+			if (baseModel instanceof PushMessageEntity) {
+				PushMessageEntity record = (PushMessageEntity) baseModel;
+				record.setSendStatus(status);
+				return updateEntity(record);
+			} else {
+				return ErrorConstant.getError(ErrorConstant.ERROR_RECORD_NOT_FOUND);
+			}
+		} else {
+			return ErrorConstant.getError(ErrorConstant.ERROR_RECORD_NOT_FOUND);
+		}
 	}
 }

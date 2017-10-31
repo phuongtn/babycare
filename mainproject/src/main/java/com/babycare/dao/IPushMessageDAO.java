@@ -9,4 +9,5 @@ public interface IPushMessageDAO extends IOperations<PushMessageEntity> {
 	BaseModel deleteMessage(PushMessage messageId);
 	BaseModel deleteMessageByPushID(String pushId);
 	BaseModel updateStatus(String messageId, String status);
+	BaseModel deleteMessageByMessageId(String messageId);
 }

@@ -17,10 +17,15 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.xmlpull.v1.XmlPullParser;
 
+import com.babycare.events.ChangeEvent;
+import com.babycare.events.UnRecoverablePushMessage;
+import com.babycare.model.payload.PushMessage;
 import com.wedevol.xmpp.bean.CcsInMessage;
 import com.wedevol.xmpp.bean.CcsOutMessage;
 import com.wedevol.xmpp.service.PayloadProcessor;
@@ -39,7 +44,7 @@ import javax.net.ssl.SSLSocketFactory;
  * https://firebase.google.com/docs/cloud-messaging/xmpp-server-ref
  */
 @Configurable
-public class CcsClient implements PacketListener {
+public class CcsClient implements PacketListener, ApplicationEventPublisherAware {
 
 	public static final Logger logger = Logger.getLogger(CcsClient.class.getName());
 
@@ -51,6 +56,7 @@ public class CcsClient implements PacketListener {
 	private boolean mDebuggable = false;
 	private String fcmServerUsername = null;
 	private boolean isConnectSuccess = false;
+	private ApplicationEventPublisher publisher;
 	public static CcsClient getInstance() {
 		if (sInstance == null) {
 			throw new IllegalStateException("You have to prepare the client first");
@@ -306,8 +312,9 @@ public class CcsClient implements PacketListener {
 
 	private void handleUnrecoverableFailure(Map<String, Object> jsonMap) {
 		// TODO: handle the unrecoverable failure
-		logger.log(Level.INFO,
-				"Unrecoverable error: " + jsonMap.get("error") + " -> " + jsonMap.get("error_description"));
+		//logger.log(Level.INFO, "Unrecoverable error: " + jsonMap.get("error") + " -> " + jsonMap.get("error_description"));
+		logger.log(Level.INFO, "Unrecoverable error: " + jsonMap.get("error") + " -> " + jsonMap.get("message_id"));
+		publisher.publishEvent(new ChangeEvent(new UnRecoverablePushMessage(jsonMap.get("message_id").toString())));
 	}
 
 	private void handleConnectionDrainingFailure() {
@@ -345,6 +352,11 @@ public class CcsClient implements PacketListener {
 
 	public void setConnectSuccess(boolean isConnectSuccess) {
 		this.isConnectSuccess = isConnectSuccess;
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+		publisher = applicationEventPublisher;
 	}
 
 }

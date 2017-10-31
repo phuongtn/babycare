@@ -48,4 +48,9 @@ public class PushMessageService extends AbstractJpaService<PushMessageEntity> im
 		return pushMessageDAO.updateStatus(messageId, status);
 	}
 
+	@Override
+	public BaseModel deleteMessageByMessageId(String messageId) {
+		return pushMessageDAO.deleteMessageByMessageId(messageId);
+	}
+
 }

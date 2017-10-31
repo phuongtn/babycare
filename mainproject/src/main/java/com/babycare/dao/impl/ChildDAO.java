@@ -23,9 +23,6 @@ import com.wedevol.xmpp.server.CcsClient;
 @Component
 @Qualifier("childDAO")
 public class ChildDAO extends AbstractJpaDao<ChildEntity> implements IChildDAO {
-	@Autowired
-	@Qualifier("CcsClient")
-	private CcsClient ccsClient;
 	public ChildDAO() {
 		super();
 		setClazz(ChildEntity.class);

@@ -5,11 +5,9 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.babycare.dao.IOperations;
-
 
 @Transactional
-public abstract class AbstractJpaService<T extends Serializable> extends AbstractService<T> implements IOperations<T> {
+public abstract class AbstractJpaService<T extends Serializable> extends AbstractService<T> /*implements IOperations<T>*/ {
 
     @Override
     public T findOne(final Long id) {
