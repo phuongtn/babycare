@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,8 +35,8 @@ public class ContentEntity extends Content implements Serializable {
 	}
 
 	@Override
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "contenttypeid", referencedColumnName = "contenttypeid", 
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name = "contenttypeid", referencedColumnName = "contenttypeid", updatable=false,
 		foreignKey = @ForeignKey(name = "FK_content_contenttype"))
 	public ContentTypeEntity getContentType() {
 		return contentType;
@@ -118,7 +119,7 @@ public class ContentEntity extends Content implements Serializable {
 		.setRegion(content.getRegion())
 		.setStart(content.getStart())
 		.setTimeUnit(content.getTimeUnit());
-		 this.contentType = new ContentTypeEntity(content.getContentType());
+		//this.contentType = new ContentTypeEntity(content.getContentType());
 	}
 	
 	@Override
