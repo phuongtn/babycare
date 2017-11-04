@@ -19,7 +19,7 @@ import com.babycare.model.payload.User;
 @Table(name = "user", catalog = "babycare")
 public class UserEntity extends User implements Serializable {
 
-	private static final long serialVersionUID = -3922441868508208542L;
+	private static final long serialVersionUID = 1L;
 	@Override
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

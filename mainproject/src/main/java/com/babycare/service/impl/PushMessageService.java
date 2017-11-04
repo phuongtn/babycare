@@ -2,6 +2,9 @@ package com.babycare.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.babycare.dao.IOperations;
@@ -51,6 +54,26 @@ public class PushMessageService extends AbstractJpaService<PushMessageEntity> im
 	@Override
 	public BaseModel deleteMessageByMessageId(String messageId) {
 		return pushMessageDAO.deleteMessageByMessageId(messageId);
+	}
+
+	@Override
+	public Page<PushMessageEntity> findPaginated(int page, int size) {
+		return pushMessageDAO.findPaginated(page, size);
+	}
+
+	@Override
+	public Page<PushMessageEntity> findPaginated(Pageable pageable) {
+		return pushMessageDAO.findPaginated(pageable);
+	}
+
+	@Override
+	public Page<PushMessageEntity> findExamplePaginated(Example<PushMessageEntity> example, Pageable pageable) {
+		return pushMessageDAO.findExamplePaginated(example, pageable);
+	}
+
+	@Override
+	public Page<PushMessageEntity> findExamplePaginated(Example<PushMessageEntity> example, int page, int size) {
+		return pushMessageDAO.findExamplePaginated(example, page, size);
 	}
 
 }

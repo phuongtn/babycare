@@ -7,10 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Transactional
-public abstract class AbstractJpaService<T extends Serializable> extends AbstractService<T> /*implements IOperations<T>*/ {
+public abstract class AbstractJpaService<T extends Serializable> extends AbstractService<T> {
 
     @Override
-    public T findOne(final Long id) {
+    public T findOne(final Object id) {
         return super.findOne(id);
     }
 
@@ -35,7 +35,7 @@ public abstract class AbstractJpaService<T extends Serializable> extends Abstrac
     }
 
     @Override
-    public void deleteById(final long entityId) {
+    public void deleteById(final Object entityId) {
         super.deleteById(entityId);
     }
 

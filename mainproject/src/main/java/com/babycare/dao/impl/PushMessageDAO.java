@@ -3,12 +3,19 @@ package com.babycare.dao.impl;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.babycare.dao.AbstractJpaDao;
 import com.babycare.dao.IPushMessageDAO;
+import com.babycare.dao.IPushMessagePagingRepo;
 import com.babycare.model.BaseModel;
 import com.babycare.model.ErrorConstant;
 import com.babycare.model.PushMessageConstant;
@@ -20,7 +27,8 @@ import com.babycare.model.response.CommonResponse;
 @Component
 @Qualifier("pushMessageDAO")
 public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements IPushMessageDAO {
-
+	@Autowired
+	private IPushMessagePagingRepo repo;
 	@Override
 	public BaseModel deleteMessage(PushMessage pushMessage) {
 		if (pushMessage != null) {
@@ -121,5 +129,25 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 		} else {
 			return ErrorConstant.getError(ErrorConstant.ERROR_RECORD_NOT_FOUND);
 		}
+	}
+
+	@Override
+	public Page<PushMessageEntity> findPaginated(Pageable pageable) {
+		return repo.findAll(pageable);
+	}
+
+	@Override
+	public Page<PushMessageEntity> findPaginated(int page, int size) {
+		return repo.findAll(PageRequest.of(page, size));
+	}
+
+	@Override
+	public Page<PushMessageEntity> findExamplePaginated(Example<PushMessageEntity> example, Pageable pageable) {
+		return repo.findAll(example, pageable);
+	}
+
+	@Override
+	public Page<PushMessageEntity> findExamplePaginated(Example<PushMessageEntity> example, int page, int size) {
+		return repo.findAll(example, PageRequest.of(page, size));
 	}
 }

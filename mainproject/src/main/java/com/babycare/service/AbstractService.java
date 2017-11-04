@@ -9,8 +9,8 @@ import com.babycare.dao.IOperations;
 public abstract class AbstractService<T extends Serializable> implements IOperations<T> {
 
     @Override
-    public T findOne(Long id) {
-        return getDao().findOne(id);
+    public T findOne(final Object key) {
+        return getDao().findOne(key);
     }
 
     @Override
@@ -34,8 +34,8 @@ public abstract class AbstractService<T extends Serializable> implements IOperat
     }
 
     @Override
-    public void deleteById(final long entityId) {
-        getDao().deleteById(entityId);
+    public void deleteById(final Object id) {
+        getDao().deleteById(id);
     }
 
     @Override

@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.babycare.model.BaseModel;
@@ -34,18 +37,21 @@ public class ChangeEventListener extends BaseApplicationListener {
 			BaseModel baseModel = changeEvent.getModel();
 			if (baseModel instanceof UserEntity) {
 				UserEntity entity = (UserEntity) baseModel;
-				onChangeEvent(MessageConstant.MessageAction.ACCOUNT_CHANGE.getName(), entity.getUserId(), entity.getRequestBySessionId(), "User changed");
+				onChangeEvent(MessageConstant.MessageAction.ACCOUNT_CHANGED.getName(), entity.getUserId(), entity.getRequestBySessionId(), "User changed");
 			} else if (baseModel instanceof ChildEntity) {
 				ChildEntity entity = (ChildEntity) baseModel;
-				onChangeEvent(MessageConstant.MessageAction.CHILDREN_CHANGE.getName(), entity.getUserId(), entity.getRequestBySessionId(), "Child changed");
+				onChangeEvent(MessageConstant.MessageAction.CHILDREN_CHANGED.getName(), entity.getUserId(), entity.getRequestBySessionId(), "Child changed");
 			} else if (baseModel instanceof SessionEntity) {
 				SessionEntity entity = (SessionEntity) baseModel;
-				onChangeEvent(MessageConstant.MessageAction.SESSION_CHANGE.getName(), entity.getUserId(), entity.getRequestBySessionId(), "Session changed");
+				onChangeEvent(MessageConstant.MessageAction.SESSION_CHANGED.getName(), entity.getUserId(), entity.getRequestBySessionId(), "Session changed");
 				if (StringUtils.isNotBlank(entity.getOldPushId())) {
 					pushMessageService.deleteMessageByPushID(entity.getOldPushId());
 				}
 			} else if (baseModel instanceof UnRecoverablePushMessage) {
 				pushMessageService.deleteMessageByMessageId(((UnRecoverablePushMessage) baseModel).getMessageId());
+			} else if (baseModel instanceof FCMReconnectSuccessful) {
+				onFCMReconnectSuccessful();
+				//logger.log(Level.INFO, "PHUONG FCMReconnectSuccessful");
 			}
 		}
 	}
@@ -85,4 +91,21 @@ public class ChangeEventListener extends BaseApplicationListener {
 		}
 	}
 	
+	private void onFCMReconnectSuccessful() {
+		Example<PushMessageEntity> example = Example.of(new PushMessageEntity().setSendStatus("PENDING"));
+		Page<PushMessageEntity> page;
+		do {
+			page = pushMessageService.findExamplePaginated(example, 0, 10);
+			List<PushMessageEntity> list = page.getContent();
+			for (PushMessageEntity item : list) {
+				try {
+					ccsClient.send(item.getPayLoad());
+					item.setSendStatus("SENT");
+					pushMessageService.update(item);
+				} catch (Exception e) {
+					
+				}
+			}
+		} while(page != null && !page.isLast()); 
+	}
 }

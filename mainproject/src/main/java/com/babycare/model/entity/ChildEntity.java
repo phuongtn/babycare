@@ -21,7 +21,7 @@ public class ChildEntity extends Child implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1416878046123153824L;
+	private static final long serialVersionUID = 1L;
 
 	public ChildEntity() {}
 	

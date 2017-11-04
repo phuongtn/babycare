@@ -21,9 +21,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.xmlpull.v1.XmlPullParser;
 
 import com.babycare.events.ChangeEvent;
+import com.babycare.events.FCMReconnectSuccessful;
 import com.babycare.events.UnRecoverablePushMessage;
 import com.babycare.model.payload.PushMessage;
 import com.wedevol.xmpp.bean.CcsInMessage;
@@ -33,6 +35,7 @@ import com.wedevol.xmpp.util.Util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,8 +58,11 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 	private String mProjectId = null;
 	private boolean mDebuggable = false;
 	private String fcmServerUsername = null;
-	private boolean isConnectSuccess = false;
+	private AtomicBoolean connectStatus = new AtomicBoolean(false);
+	private AtomicBoolean loginStatus = new AtomicBoolean(false);
+	private AtomicBoolean connectingStatus = new AtomicBoolean(false); 
 	private ApplicationEventPublisher publisher;
+
 	public static CcsClient getInstance() {
 		if (sInstance == null) {
 			throw new IllegalStateException("You have to prepare the client first");
@@ -106,67 +112,29 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 	 * Connects to FCM Cloud Connection Server using the supplied credentials
 	 */
 	public void connect() throws XMPPException {
-		config = new ConnectionConfiguration(Util.FCM_SERVER, Util.FCM_PORT);
-		config.setSecurityMode(SecurityMode.enabled);
-		config.setReconnectionAllowed(true);
-		config.setRosterLoadedAtLogin(false);
-		config.setSendPresence(false);
-		config.setSocketFactory(SSLSocketFactory.getDefault());
-		// Launch a window with info about packets sent and received
-		config.setDebuggerEnabled(mDebuggable);
-
-		connection = new XMPPConnection(config);
-		connection.connect();
-
-		connection.addConnectionListener(new ConnectionListener() {
-
-			@Override
-			public void reconnectionSuccessful() {
-				logger.log(Level.INFO, "Reconnection successful ...");
-				// TODO: handle the reconnecting successful
-			}
-
-			@Override
-			public void reconnectionFailed(Exception e) {
-				logger.log(Level.INFO, "Reconnection failed: ", e.getMessage());
-				// TODO: handle the reconnection failed
-			}
-
-			@Override
-			public void reconnectingIn(int seconds) {
-				logger.log(Level.INFO, "Reconnecting in %d secs", seconds);
-				// TODO: handle the reconnecting in
-			}
-
-			@Override
-			public void connectionClosedOnError(Exception e) {
-				logger.log(Level.INFO, "Connection closed on error");
-				// TODO: handle the connection closed on error
-			}
-
-			@Override
-			public void connectionClosed() {
-				logger.log(Level.INFO, "Connection closed");
-				// TODO: handle the connection closed
-			}
-		});
-
-		// Handle incoming packets (the class implements the PacketListener)
-		connection.addPacketListener(this, new PacketTypeFilter(Message.class));
-
-		// Log all outgoing packets
-		connection.addPacketInterceptor(new PacketInterceptor() {
-			@Override
-			public void interceptPacket(Packet packet) {
-				logger.log(Level.INFO, "Sent: {0}", packet.toXML());
-			}
-		}, new PacketTypeFilter(Message.class));
-
-		connection.login(fcmServerUsername, mApiKey);
-		logger.log(Level.INFO, "Logged in: " + fcmServerUsername);
+		config = getConnectionConfiguration();
+		connection = getXMPPConnection(config);
+		boolean tryConenct = tryConnect(connection);
+		if (tryConenct) {
+			connection.addConnectionListener(connectionListener);
+			addPacketListener(connection);
+			doLogin();
+		}
 	}
 
+	@Scheduled(fixedRate = 1000 * 60)
 	public void reconnect() {
+		logger.log(Level.INFO, "doConnectionChecker");
+		if (!connectingStatus.get() && (!connectStatus.get() || !loginStatus.get())) {
+			try {
+				connect();
+			} catch (XMPPException xmppException) {
+				logger.log(Level.INFO, "reconnect " + xmppException.toString());
+			}
+			if (connectStatus.get() && loginStatus.get()) {
+				publisher.publishEvent(new ChangeEvent(new FCMReconnectSuccessful()));
+			}
+		}
 		// Try to connect again using exponential back-off!
 	}
 
@@ -192,7 +160,7 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 
 			switch (messageType.toString()) {
 			case "ack":
-				logger.log(Level.INFO, "Handle handleAckReceipt from " + jsonMap.get("from") );
+				logger.log(Level.INFO, "Handle handleAckReceipt from " + jsonMap.get("from"));
 				handleAckReceipt(jsonMap);
 				break;
 			case "nack":
@@ -283,8 +251,8 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 	}
 
 	/**
-	 * Handles a Delivery Receipt message from FCM (when a device confirms that
-	 * it received a particular message)
+	 * Handles a Delivery Receipt message from FCM (when a device confirms that it
+	 * received a particular message)
 	 */
 	private void handleDeliveryReceipt(Map<String, Object> jsonMap) {
 		// TODO: handle the delivery receipt
@@ -312,7 +280,8 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 
 	private void handleUnrecoverableFailure(Map<String, Object> jsonMap) {
 		// TODO: handle the unrecoverable failure
-		//logger.log(Level.INFO, "Unrecoverable error: " + jsonMap.get("error") + " -> " + jsonMap.get("error_description"));
+		// logger.log(Level.INFO, "Unrecoverable error: " + jsonMap.get("error") + " ->
+		// " + jsonMap.get("error_description"));
 		logger.log(Level.INFO, "Unrecoverable error: " + jsonMap.get("error") + " -> " + jsonMap.get("message_id"));
 		publisher.publishEvent(new ChangeEvent(new UnRecoverablePushMessage(jsonMap.get("message_id").toString())));
 	}
@@ -347,11 +316,11 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 	}
 
 	public boolean isConnectSuccess() {
-		return isConnectSuccess;
+		return connectStatus.get();
 	}
 
-	public void setConnectSuccess(boolean isConnectSuccess) {
-		this.isConnectSuccess = isConnectSuccess;
+	public void setConnectSuccess(boolean isConnected) {
+		this.connectStatus.set(isConnected);
 	}
 
 	@Override
@@ -359,4 +328,96 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 		publisher = applicationEventPublisher;
 	}
 
+	public ConnectionConfiguration getConnectionConfiguration() {
+		ConnectionConfiguration config = new ConnectionConfiguration(Util.FCM_SERVER, Util.FCM_PORT);
+		config.setSecurityMode(SecurityMode.enabled);
+		config.setReconnectionAllowed(true);
+		config.setRosterLoadedAtLogin(false);
+		config.setSendPresence(false);
+		config.setSocketFactory(SSLSocketFactory.getDefault());
+		// Launch a window with info about packets sent and received
+		config.setDebuggerEnabled(mDebuggable);
+		return config;
+	}
+
+	public XMPPConnection getXMPPConnection(ConnectionConfiguration config) {
+		return new XMPPConnection(config);
+	}
+
+	private boolean tryConnect(XMPPConnection connection) {
+		try {
+			connectingStatus.set(true);
+			connection.connect();
+			connectStatus.set(true);
+		} catch (XMPPException xmppException) {
+			connectingStatus.set(false);
+			connectStatus.set(false);
+		}
+		return connectStatus.get();
+	}
+	
+
+	private ConnectionListener connectionListener = new ConnectionListener() {
+		@Override
+		public void reconnectionSuccessful() {
+			logger.log(Level.INFO, "Reconnection successful ...");
+			connectingStatus.set(false);
+			connectStatus.set(true);
+			publisher.publishEvent(new ChangeEvent(new FCMReconnectSuccessful()));
+			// TODO: handle the reconnecting successful
+		}
+
+		@Override
+		public void reconnectionFailed(Exception e) {
+			logger.log(Level.INFO, "Reconnection failed: ", e.getMessage());
+			connectingStatus.set(false);
+			connectStatus.set(false);
+			// TODO: handle the reconnection failed
+		}
+
+		@Override
+		public void reconnectingIn(int seconds) {
+			connectingStatus.set(true);
+			logger.log(Level.INFO, "Reconnecting in %d secs", seconds);
+			// TODO: handle the reconnecting in
+		}
+
+		@Override
+		public void connectionClosedOnError(Exception e) {
+			connectStatus.set(false);
+			logger.log(Level.INFO, "Connection closed on error");
+			// TODO: handle the connection closed on error
+		}
+
+		@Override
+		public void connectionClosed() {
+			logger.log(Level.INFO, "Connection closed");
+			// TODO: handle the connection closed
+		}
+	};
+	
+	private void addPacketListener(XMPPConnection connection) {
+		// Handle incoming packets (the class implements the PacketListener)
+		connection.addPacketListener(this, new PacketTypeFilter(Message.class));
+
+		// Log all outgoing packets
+		connection.addPacketInterceptor(new PacketInterceptor() {
+			@Override
+			public void interceptPacket(Packet packet) {
+				logger.log(Level.INFO, "Sent: {0}", packet.toXML());
+			}
+		}, new PacketTypeFilter(Message.class));
+	}
+	
+	private boolean doLogin() {
+		try {
+			connection.login(fcmServerUsername, mApiKey);
+			loginStatus.set(true);
+			logger.log(Level.INFO, "Logged in: " + fcmServerUsername + " Successfully");
+		} catch (XMPPException xmppException) {
+			logger.log(Level.INFO, "Cannot Logged in: " + fcmServerUsername);
+			loginStatus.set(false);
+		}
+		return loginStatus.get();
+	}
 }
