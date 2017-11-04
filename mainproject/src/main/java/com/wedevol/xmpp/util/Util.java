@@ -26,6 +26,7 @@ public class Util {
 	public static final String PAYLOAD_ATTRIBUTE_ACTION = "action";
 	public static final String PAYLOAD_ATTRIBUTE_RECIPIENT = "recipient";
 	public static final String PAYLOAD_ATTRIBUTE_ACCOUNT = "account";
+	public static final String PAYLOAD_ATTRIBUTE_MESSAGE_ID= "message_id";
 
 	/**
 	 * Returns a random message id to uniquely identify a message

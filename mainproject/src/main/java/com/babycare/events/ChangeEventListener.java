@@ -67,8 +67,8 @@ public class ChangeEventListener extends BaseApplicationListener {
 					String messageId = Util.getUniqueMessageId();
 					Map<String, String> dataPayload = new HashMap<String, String>();
 					dataPayload.put(Util.PAYLOAD_ATTRIBUTE_MESSAGE, message);
-					dataPayload.put(Util.PAYLOAD_ATTRIBUTE_ACTION,
-							action);
+					dataPayload.put(Util.PAYLOAD_ATTRIBUTE_ACTION,action);
+					dataPayload.put(Util.PAYLOAD_ATTRIBUTE_MESSAGE_ID, messageId);
 					CcsOutMessage ccsOutMessage = PushMessageFactory.
 							createSimpleCCsOutMessage(entity.getPushId(), messageId, dataPayload);
 					String payLoad = PushMessageFactory.createMessagePayLoad(ccsOutMessage);
