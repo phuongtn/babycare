@@ -1,12 +1,18 @@
 package com.babycare.model.entity;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -14,11 +20,21 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.babycare.model.payload.User;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "user", catalog = "babycare")
+@JsonIdentityInfo(
+generator = ObjectIdGenerators.PropertyGenerator.class, 
+property = "userId")
+@JsonIgnoreProperties({"requestBySessionId"})
 public class UserEntity extends User implements Serializable {
 
+	private Set<SessionEntity> sessionEntities = new HashSet<SessionEntity>(0);
 	private static final long serialVersionUID = 1L;
 	@Override
 	@Id
@@ -84,4 +100,17 @@ public class UserEntity extends User implements Serializable {
 		this.userId = user.getUserId();
 		this.password = user.getPassword();
 	}
+
+	@OneToMany(orphanRemoval=true)
+	@JoinColumn(name="userid")
+	@JsonProperty("sessions")
+	@JsonManagedReference
+	public Set<SessionEntity> getSessionEntities() {
+		return sessionEntities;
+	}
+
+	public void setSessionEntities(Set<SessionEntity> sessionEntities) {
+		this.sessionEntities = sessionEntities;
+	}
+
 }

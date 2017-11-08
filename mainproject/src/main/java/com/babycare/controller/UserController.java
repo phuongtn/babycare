@@ -1,5 +1,7 @@
 package com.babycare.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import com.babycare.service.IUserService;
 @RestController(value = "userController")
 @RequestMapping("user")
 public class UserController {
+	private final Logger LOG = LoggerFactory.getLogger(UserController.class);
 	@Autowired
 	@Qualifier("userService")
 	private IUserService userService;
@@ -43,6 +46,7 @@ public class UserController {
 
 	@PostMapping(value = "/get/by/email/provider", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> getUserByEmailAndProvider(@RequestBody User payload) {
+		LOG.debug("PHUONG REQUEST ID --> " + payload.getRequestBySessionId());
 		BaseModel model = userService.getUserByEmailAndProvider(payload);
 		return Response(model);
 	}
@@ -61,6 +65,7 @@ public class UserController {
 
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof UserEntity) {
+			//return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
 			return new ResponseEntity<BaseModel>((User) model, HttpStatus.OK);
 		} else if (model instanceof Error) {
 			return new ResponseEntity<BaseModel>((Error) model, HttpStatus.CONFLICT);

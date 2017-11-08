@@ -16,11 +16,21 @@ import javax.persistence.Transient;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.babycare.model.payload.Session;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "session", catalog = "babycare")
+@JsonIdentityInfo(
+generator = ObjectIdGenerators.PropertyGenerator.class, 
+property = "sessionId")
+@JsonIgnoreProperties({"oldPushId", "userId","requestBySessionId"})
 public class SessionEntity extends Session implements Serializable {
 
 	private static final long serialVersionUID = 856603274488076082L;
@@ -62,7 +72,6 @@ public class SessionEntity extends Session implements Serializable {
 	}
 
 	@Override
-	@Transient
 	public Long getUserId() {
 		return userId;
 	}
@@ -71,6 +80,7 @@ public class SessionEntity extends Session implements Serializable {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "userid", referencedColumnName = "userid", 
 		foreignKey = @ForeignKey(name = "FK_session_user"))
+	@JsonIgnoreProperties({"sessions"})
 	public UserEntity getUser() {
 		return user;
 	}
@@ -104,7 +114,6 @@ public class SessionEntity extends Session implements Serializable {
 		this.user = new UserEntity(session.getUser());
 	}
 	
-	@Transient
 	public String getOldPushId() {
 		return oldPushId;
 	}
