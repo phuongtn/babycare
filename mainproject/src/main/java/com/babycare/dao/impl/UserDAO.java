@@ -16,6 +16,7 @@ import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ErrorConstant;
+import com.babycare.model.common.CommonResponseEx;
 import com.babycare.model.entity.UserEntity;
 import com.babycare.model.payload.User;
 import com.babycare.model.response.CommonResponse;
@@ -208,8 +209,14 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
 			try {
-				deleteById(id);
-				return new CommonResponse("User removed", true);
+				UserEntity entity = findOne(id);
+				if (entity != null) {
+					deleteById(id);
+					return new CommonResponseEx("User removed", true);
+				} else {
+					return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
+				}
+				
 			} catch (Exception e) {
 				return ErrorConstant.getError(ErrorConstant.ERROR_REMOVE_USER);
 			}
