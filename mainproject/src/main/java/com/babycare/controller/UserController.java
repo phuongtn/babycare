@@ -1,21 +1,25 @@
 package com.babycare.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
+import com.babycare.model.common.CommonResponseEx;
 import com.babycare.model.entity.UserEntity;
 import com.babycare.model.payload.User;
 import com.babycare.model.response.CommonResponse;
@@ -65,9 +69,14 @@ public class UserController {
 	}
 
 	@DeleteMapping(value = "/delete", headers = "Accept=application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<BaseModel> deleteUser(@RequestBody User body) {
-		BaseModel model = userService.deleteUser(body);
-		return Response(model);
+	public @ResponseBody ResponseEntity<BaseModel> deleteUser(@RequestBody User body, @RequestHeader(value="SECRET_KEY") String secKey) {
+		if (StringUtils.isNotEmpty(secKey) && secKey.equals("ZXCASD~!@#")) {
+			BaseModel model = userService.deleteUser(body);
+			return Response(model);
+		} else {
+			return new ResponseEntity<BaseModel>(new CommonResponseEx().setIsSuccess(false).setMesage("Cannot delete Account"), HttpStatus.CONFLICT);
+		}
+
 	}
 
 	

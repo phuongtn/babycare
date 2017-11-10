@@ -19,7 +19,6 @@ import com.babycare.model.ErrorConstant;
 import com.babycare.model.common.CommonResponseEx;
 import com.babycare.model.entity.UserEntity;
 import com.babycare.model.payload.User;
-import com.babycare.model.response.CommonResponse;
 import com.babycare.service.ISessionService;
 
 @Repository
