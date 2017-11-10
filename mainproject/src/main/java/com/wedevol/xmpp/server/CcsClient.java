@@ -1,5 +1,13 @@
 package com.wedevol.xmpp.server;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.net.ssl.SSLSocketFactory;
+
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.ConnectionListener;
@@ -15,31 +23,19 @@ import org.jivesoftware.smack.provider.PacketExtensionProvider;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.xmlpull.v1.XmlPullParser;
 
 import com.babycare.events.ChangeEvent;
-import com.babycare.events.FCMReconnectSuccessful;
+import com.babycare.events.FCMReconnectSuccessEvent;
 import com.babycare.events.UnRecoverablePushMessage;
-import com.babycare.model.payload.PushMessage;
 import com.wedevol.xmpp.bean.CcsInMessage;
 import com.wedevol.xmpp.bean.CcsOutMessage;
 import com.wedevol.xmpp.service.PayloadProcessor;
 import com.wedevol.xmpp.util.Util;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Sample Smack implementation of a client for FCM Cloud Connection Server. Most
@@ -124,7 +120,6 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 
 	@Scheduled(fixedRate = 1000 * 60)
 	public void reconnect() {
-		logger.log(Level.INFO, "doConnectionChecker");
 		if (!connectingStatus.get() && (!connectStatus.get() || !loginStatus.get())) {
 			try {
 				connect();
@@ -132,7 +127,7 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 				logger.log(Level.INFO, "reconnect " + xmppException.toString());
 			}
 			if (connectStatus.get() && loginStatus.get()) {
-				publisher.publishEvent(new ChangeEvent(new FCMReconnectSuccessful()));
+				publisher.publishEvent(new ChangeEvent(new FCMReconnectSuccessEvent()));
 			}
 		}
 		// Try to connect again using exponential back-off!
@@ -363,7 +358,7 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 			logger.log(Level.INFO, "Reconnection successful ...");
 			connectingStatus.set(false);
 			connectStatus.set(true);
-			publisher.publishEvent(new ChangeEvent(new FCMReconnectSuccessful()));
+			publisher.publishEvent(new ChangeEvent(new FCMReconnectSuccessEvent()));
 			// TODO: handle the reconnecting successful
 		}
 

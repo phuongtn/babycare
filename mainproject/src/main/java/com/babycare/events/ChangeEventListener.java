@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,9 +48,10 @@ public class ChangeEventListener extends BaseApplicationListener {
 				}
 			} else if (baseModel instanceof UnRecoverablePushMessage) {
 				pushMessageService.deleteMessageByMessageId(((UnRecoverablePushMessage) baseModel).getMessageId());
-			} else if (baseModel instanceof FCMReconnectSuccessful) {
+			} else if (baseModel instanceof FCMReconnectSuccessEvent) {
 				onFCMReconnectSuccessful();
-				//logger.log(Level.INFO, "PHUONG FCMReconnectSuccessful");
+			} else if (baseModel instanceof RemoveUserEvent) {
+				onRemoveUserEvent((RemoveUserEvent)baseModel);
 			}
 		}
 	}
@@ -76,7 +76,8 @@ public class ChangeEventListener extends BaseApplicationListener {
 					pushMessageService.createEntity(new PushMessageEntity().
 							setMessageId(messageId).setPayLoad(payLoad).
 							setAction(action).setPushId(entity.getPushId()).
-							setSendStatus(PushMessageStatus.SENT.getName()));
+							setSendStatus(PushMessageStatus.SENT.getName()).
+							setSessionId(entity.getSessionId()));
 				}
 			}
 			Set<Entry<String, String>> set = messages.entrySet();
@@ -90,7 +91,7 @@ public class ChangeEventListener extends BaseApplicationListener {
 			}
 		}
 	}
-	
+
 	private void onFCMReconnectSuccessful() {
 		Example<PushMessageEntity> example = Example.of(new PushMessageEntity().setSendStatus("PENDING"));
 		Page<PushMessageEntity> page;
@@ -107,5 +108,14 @@ public class ChangeEventListener extends BaseApplicationListener {
 				}
 			}
 		} while(page != null && !page.isLast()); 
+	}
+
+	private void onRemoveUserEvent(RemoveUserEvent event) {
+		Set<SessionEntity> sessions = event.getSessions();
+		if (sessions != null && !sessions.isEmpty()) {
+			for (SessionEntity sessionEntity : sessions) {
+				pushMessageService.deleteMessageBySessionId(sessionEntity.getSessionId());
+			}
+		}
 	}
 }

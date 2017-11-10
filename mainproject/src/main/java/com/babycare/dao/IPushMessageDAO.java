@@ -9,4 +9,5 @@ public interface IPushMessageDAO extends IPagingOperations<PushMessageEntity> {
 	BaseModel deleteMessageByPushID(String pushId);
 	BaseModel updateStatus(String messageId, String status);
 	BaseModel deleteMessageByMessageId(String messageId);
+	BaseModel deleteMessageBySessionId(Long sessionId);
 }

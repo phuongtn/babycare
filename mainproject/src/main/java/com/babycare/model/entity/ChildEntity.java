@@ -4,9 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -14,21 +17,29 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.babycare.model.payload.Child;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "children", catalog = "babycare")
+@JsonIdentityInfo(
+generator = ObjectIdGenerators.PropertyGenerator.class, 
+property = "childId")
+@JsonIgnoreProperties({"userId","requestBySessionId"})
 public class ChildEntity extends Child implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private UserEntity user;
 
 	public ChildEntity() {}
 	
 	public ChildEntity(Child child) {
 		this.childId = child.getChildId();
 		this.name = child.getName();
-		this.userId = child.getUserId();
+		//this.userId = child.getUserId();
 		this.babyType = child.getBabyType();
 		this.blood = child.getBlood();
 		this.dob = child.getDob();
@@ -44,11 +55,11 @@ public class ChildEntity extends Child implements Serializable {
 		return childId;
 	}
 
-	@Override
+/*	@Override
 	@Column(name="userid")
 	public Long getUserId() {
 		return userId;
-	}
+	}*/
 
 	@Override
 	@Column(name="name")
@@ -100,6 +111,19 @@ public class ChildEntity extends Child implements Serializable {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "userid", referencedColumnName = "userid", 
+		foreignKey = @ForeignKey(name = "FK_children_user"))
+	@JsonIgnoreProperties({"children"})
+	public UserEntity getUser() {
+		return user;
+	}
+
+
+	public void setUser(UserEntity user) {
+		this.user = user;
 	}
 
 }

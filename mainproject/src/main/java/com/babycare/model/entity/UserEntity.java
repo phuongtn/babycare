@@ -7,7 +7,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,6 +34,7 @@ property = "userId")
 public class UserEntity extends User implements Serializable {
 
 	private Set<SessionEntity> sessionEntities = new HashSet<SessionEntity>(0);
+	private Set<ChildEntity> childEntities = new HashSet<ChildEntity>(0);
 	private static final long serialVersionUID = 1L;
 	@Override
 	@Id
@@ -101,7 +101,7 @@ public class UserEntity extends User implements Serializable {
 		this.password = user.getPassword();
 	}
 
-	@OneToMany(orphanRemoval=true)
+	@OneToMany(cascade = {CascadeType.REMOVE})
 	@JoinColumn(name="userid")
 	@JsonProperty("sessions")
 	@JsonManagedReference
@@ -111,6 +111,18 @@ public class UserEntity extends User implements Serializable {
 
 	public void setSessionEntities(Set<SessionEntity> sessionEntities) {
 		this.sessionEntities = sessionEntities;
+	}
+
+	@OneToMany(cascade = {CascadeType.REMOVE})
+	@JoinColumn(name="userid")
+	@JsonProperty("children")
+	@JsonManagedReference
+	public Set<ChildEntity> getChildEntities() {
+		return childEntities;
+	}
+
+	public void setChildEntities(Set<ChildEntity> childEntities) {
+		this.childEntities = childEntities;
 	}
 
 }

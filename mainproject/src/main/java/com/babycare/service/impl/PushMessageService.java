@@ -76,4 +76,9 @@ public class PushMessageService extends AbstractJpaService<PushMessageEntity> im
 		return pushMessageDAO.findExamplePaginated(example, page, size);
 	}
 
+	@Override
+	public BaseModel deleteMessageBySessionId(Long sessionId) {
+		return pushMessageDAO.deleteMessageBySessionId(sessionId);
+	}
+
 }

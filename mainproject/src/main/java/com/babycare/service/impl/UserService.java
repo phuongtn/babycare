@@ -1,5 +1,6 @@
 package com.babycare.service.impl;
 
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,12 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
 
 import com.babycare.dao.IOperations;
+import com.babycare.dao.ISessionDAO;
 import com.babycare.dao.IUserDao;
 import com.babycare.events.ChangeEvent;
+import com.babycare.events.RemoveUserEvent;
 import com.babycare.model.BaseModel;
+import com.babycare.model.entity.SessionEntity;
 import com.babycare.model.entity.UserEntity;
 import com.babycare.model.payload.User;
 import com.babycare.service.AbstractJpaService;
@@ -23,6 +27,10 @@ public class UserService extends AbstractJpaService<UserEntity> implements IUser
 	@Autowired
 	@Qualifier("userDAO")
 	private IUserDao userDao;
+
+	@Autowired
+	@Qualifier("sessionDAO")
+	private ISessionDAO sessionDAO;
 
 	private ApplicationEventPublisher publisher;
 
@@ -82,5 +90,21 @@ public class UserService extends AbstractJpaService<UserEntity> implements IUser
 			model.setRequestBySessionId(requestId);
 			publisher.publishEvent(new ChangeEvent(model));
 		}
+	}
+
+	@Override
+	public BaseModel deleteUser(User user) {
+		UserEntity entity = null;
+		if (user != null && user.getUserId() != null) {
+			 entity = userDao.findOne(user.getUserId());
+			if (entity != null) {
+				Set<SessionEntity> sessions = entity.getSessionEntities();
+				if (sessions != null && !sessions.isEmpty()) {
+					publisher.publishEvent(new ChangeEvent(new RemoveUserEvent(sessions)));
+				}
+			}
+		}
+		//return entity;
+		return userDao.deleteUser(user);
 	}
 }

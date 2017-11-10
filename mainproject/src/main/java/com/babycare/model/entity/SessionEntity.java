@@ -16,13 +16,11 @@ import javax.persistence.Transient;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.junit.Ignore;
 
 import com.babycare.model.payload.Session;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
@@ -113,7 +111,9 @@ public class SessionEntity extends Session implements Serializable {
 		this.status = session.getStatus();
 		this.user = new UserEntity(session.getUser());
 	}
-	
+
+	@Transient
+	@Ignore
 	public String getOldPushId() {
 		return oldPushId;
 	}

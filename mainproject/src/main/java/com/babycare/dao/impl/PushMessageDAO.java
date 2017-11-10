@@ -9,7 +9,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
@@ -149,5 +148,27 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 	@Override
 	public Page<PushMessageEntity> findExamplePaginated(Example<PushMessageEntity> example, int page, int size) {
 		return repo.findAll(example, PageRequest.of(page, size));
+	}
+
+	@Override
+	public BaseModel deleteMessageBySessionId(Long sessionId) {
+		if (sessionId != null) {
+			String hql = "DELETE PushMessageEntity WHERE sessionId=:sessionId";
+			int result = 0;
+			Query query = em.createQuery(hql);
+			query.setParameter("sessionId", sessionId);
+			try {
+				result = query.executeUpdate();
+			} catch (Exception e) {
+				result = 0;
+			}
+			if (result > 0) {
+				return new CommonResponse(PushMessageConstant.MESSAGE_DELETED, true);
+			} else {
+				return new CommonResponse(PushMessageConstant.MESSAGE_NOT_FOUND, true);
+			}
+		} else {
+			return new CommonResponse(PushMessageConstant.MESSAGE_NOT_FOUND, true);
+		}
 	}
 }

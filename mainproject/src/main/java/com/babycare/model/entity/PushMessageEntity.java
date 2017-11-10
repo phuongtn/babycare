@@ -25,6 +25,7 @@ public class PushMessageEntity extends PushMessage implements Serializable {
 	private DateTime timeStamp;
 	private String pushId;
 	private String sendStatus;
+	private Long sessionId;
 
 	@Override
 	public PushMessageEntity setMessageId(String messageId) {
@@ -101,6 +102,16 @@ public class PushMessageEntity extends PushMessage implements Serializable {
 	@Column(name = "sendstatus")
 	public String getSendStatus() {
 		return sendStatus;
+	}
+
+	@Column(name = "sessionid")
+	public Long getSessionId() {
+		return sessionId;
+	}
+
+	public PushMessageEntity setSessionId(Long sessionId) {
+		this.sessionId = sessionId;
+		return this;
 	}
 
 	public PushMessageEntity setSendStatus(String sendStatus) {

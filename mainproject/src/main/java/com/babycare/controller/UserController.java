@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.entity.UserEntity;
 import com.babycare.model.payload.User;
+import com.babycare.model.response.CommonResponse;
 import com.babycare.service.ISessionService;
 import com.babycare.service.IUserService;
 
@@ -46,7 +48,6 @@ public class UserController {
 
 	@PostMapping(value = "/get/by/email/provider", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> getUserByEmailAndProvider(@RequestBody User payload) {
-		LOG.debug("PHUONG REQUEST ID --> " + payload.getRequestBySessionId());
 		BaseModel model = userService.getUserByEmailAndProvider(payload);
 		return Response(model);
 	}
@@ -63,12 +64,21 @@ public class UserController {
 		return Response(model);
 	}
 
+	@DeleteMapping(value = "/delete", headers = "Accept=application/json", produces = "application/json")
+	public @ResponseBody ResponseEntity<BaseModel> deleteUser(@RequestBody User body) {
+		BaseModel model = userService.deleteUser(body);
+		return Response(model);
+	}
+
+	
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof UserEntity) {
 			//return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
-			return new ResponseEntity<BaseModel>((User) model, HttpStatus.OK);
+			return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
 		} else if (model instanceof Error) {
-			return new ResponseEntity<BaseModel>((Error) model, HttpStatus.CONFLICT);
+			return new ResponseEntity<BaseModel>(model, HttpStatus.CONFLICT);
+		} else if (model instanceof CommonResponse) {
+			return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<BaseModel>((User) null, HttpStatus.CONFLICT);
 		}

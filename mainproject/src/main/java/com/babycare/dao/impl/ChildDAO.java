@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -14,10 +13,8 @@ import com.babycare.dao.IChildDAO;
 import com.babycare.model.BaseModel;
 import com.babycare.model.ErrorConstant;
 import com.babycare.model.ResultList;
-
 import com.babycare.model.entity.ChildEntity;
 import com.babycare.model.payload.Child;
-import com.wedevol.xmpp.server.CcsClient;
 
 @Repository
 @Component
