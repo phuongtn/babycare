@@ -13,6 +13,8 @@ import com.babycare.dao.IChildDAO;
 import com.babycare.model.BaseModel;
 import com.babycare.model.ErrorConstant;
 import com.babycare.model.ResultList;
+import com.babycare.model.common.ChildExt;
+import com.babycare.model.common.ResultListEx;
 import com.babycare.model.entity.ChildEntity;
 import com.babycare.model.payload.Child;
 
@@ -147,12 +149,15 @@ public class ChildDAO extends AbstractJpaDao<ChildEntity> implements IChildDAO {
 			Long userId = payload.getUserId();
 			String hql = "FROM ChildEntity as child WHERE child.userId = ?";
 			try {
-				List<BaseModel> result = (List<BaseModel>)em.createQuery(hql).setParameter(0, userId).getResultList();
+				List<ChildEntity> result = (List<ChildEntity>)em.createQuery(hql).setParameter(0, userId).getResultList();
 				if (result != null && !result.isEmpty()) {
-					ResultList<BaseModel> resultList = new ResultList<BaseModel>(result);
-					return resultList;
+					List<ChildExt> childList = new ArrayList<ChildExt>();
+					for (ChildEntity entity : result) {
+						childList.add(new ChildExt().toChild(entity));
+					}
+					return new ResultListEx<ChildExt>(childList);
 				} else {
-					return new ResultList<BaseModel>(new ArrayList<>());
+					return new ResultListEx<BaseModel>(new ArrayList<>());
 				}
 			} catch (Exception e) {
 				return ErrorConstant.getError(ErrorConstant.ERROR_FETCH_CHILD);

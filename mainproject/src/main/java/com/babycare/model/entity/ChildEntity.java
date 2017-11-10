@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.babycare.model.payload.Child;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -39,7 +40,7 @@ public class ChildEntity extends Child implements Serializable {
 	public ChildEntity(Child child) {
 		this.childId = child.getChildId();
 		this.name = child.getName();
-		//this.userId = child.getUserId();
+		this.userId = child.getUserId();
 		this.babyType = child.getBabyType();
 		this.blood = child.getBlood();
 		this.dob = child.getDob();
@@ -55,11 +56,11 @@ public class ChildEntity extends Child implements Serializable {
 		return childId;
 	}
 
-/*	@Override
-	@Column(name="userid")
+	@Override
+	@Column(name="userid", insertable = false, updatable = false)
 	public Long getUserId() {
 		return userId;
-	}*/
+	}
 
 	@Override
 	@Column(name="name")
@@ -125,5 +126,4 @@ public class ChildEntity extends Child implements Serializable {
 	public void setUser(UserEntity user) {
 		this.user = user;
 	}
-
 }
