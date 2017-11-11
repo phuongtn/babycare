@@ -25,7 +25,10 @@ import com.babycare.service.IPushMessageService;
 @Service(value = "pushMessageService")
 public class PushMessageService extends AbstractJpaService<PushMessageEntity> implements IPushMessageService, ApplicationEventPublisherAware {
 	private final Logger LOG = LoggerFactory.getLogger(PushMessageService.class);
-	private ApplicationEventPublisher publisher;
+	private ApplicationEventPublisher publisher;	
+/*	@Value("${schedule_clean_up_push_message_in_ms: #{172800000}}")
+	private long cleanUpSchedule;*/
+
 	@Autowired
 	@Qualifier("pushMessageDAO")
 	private IPushMessageDAO pushMessageDAO;
@@ -95,9 +98,9 @@ public class PushMessageService extends AbstractJpaService<PushMessageEntity> im
 		this.publisher = applicationEventPublisher;
 	}
 
-	@Scheduled(fixedRate = 1000 * 60)
+	@Scheduled(fixedRate = 172800000L)
+	// 2 days
 	void cleanUpPushMessages() {
-		LOG.debug("PHUONG, TEST SCHEDULE");
 		publisher.publishEvent(new ChangeEvent(new CleanUpPushMessageEvent()));
 	}
 

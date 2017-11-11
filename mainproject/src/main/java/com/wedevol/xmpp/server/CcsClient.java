@@ -118,8 +118,10 @@ public class CcsClient implements PacketListener, ApplicationEventPublisherAware
 		}
 	}
 
-	@Scheduled(fixedRate = 1000 * 60)
+	@Scheduled(fixedRate = 600000L)
+	// 10 mins
 	public void reconnect() {
+		logger.log(Level.INFO, "PHUONG Try to reconnect");
 		if (!connectingStatus.get() && (!connectStatus.get() || !loginStatus.get())) {
 			try {
 				connect();
