@@ -3,6 +3,7 @@ package com.babycare.dao.impl;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Example;
@@ -40,7 +41,7 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 	@Override
 	public BaseModel deleteMessageByMessageId(String messageId) {
 		if (StringUtils.isNotEmpty(messageId)) {
-			String hql = "DELETE PushMessageEntity WHERE messageId=:messageId";
+			final String hql = "DELETE PushMessageEntity WHERE messageId=:messageId";
 			int result = 0;
 			Query query = em.createQuery(hql);
 			query.setParameter("messageId", messageId);
@@ -75,7 +76,7 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 
 	private BaseModel getByMessageId(String messageId) {
 		if (StringUtils.isNotEmpty(messageId)) {
-			String hql = "FROM PushMessageEntity WHERE messageId=:messageId";
+			final String hql = "FROM PushMessageEntity WHERE messageId=:messageId";
 			PushMessageEntity result = null;
 			try {
 				result = (PushMessageEntity) em.createQuery(hql).setParameter("messageId", messageId).getSingleResult();
@@ -95,7 +96,7 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 	@Override
 	public BaseModel deleteMessageByPushID(String pushId) {
 		if (StringUtils.isNotEmpty(pushId)) {
-			String hql = "DELETE PushMessageEntity WHERE pushId=:pushId";
+			final String hql = "DELETE PushMessageEntity WHERE pushId=:pushId";
 			int result = 0;
 			Query query = em.createQuery(hql);
 			query.setParameter("pushId", pushId);
@@ -131,6 +132,37 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 	}
 
 	@Override
+	public BaseModel deleteMessageBySessionId(Long sessionId) {
+		if (sessionId != null) {
+			final String hql = "DELETE PushMessageEntity WHERE sessionId=:sessionId";
+			int result = 0;
+			Query query = em.createQuery(hql);
+			query.setParameter("sessionId", sessionId);
+			try {
+				result = query.executeUpdate();
+			} catch (Exception e) {
+				result = 0;
+			}
+			if (result > 0) {
+				return new CommonResponse(PushMessageConstant.MESSAGE_DELETED, true);
+			} else {
+				return new CommonResponse(PushMessageConstant.MESSAGE_NOT_FOUND, true);
+			}
+		} else {
+			return new CommonResponse(PushMessageConstant.MESSAGE_NOT_FOUND, true);
+		}
+	}
+
+	@Override
+	public void cleanUpPushMessage() {
+		final String hql = "DELETE PushMessageEntity WHERE timeStamp <= :timeStamp";
+		DateTime dt = DateTime.now().minusDays(2);
+		Query query = em.createQuery(hql);
+		query.setParameter("timeStamp", dt);
+		query.executeUpdate();
+	}
+
+	@Override
 	public Page<PushMessageEntity> findPaginated(Pageable pageable) {
 		return repo.findAll(pageable);
 	}
@@ -148,27 +180,5 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 	@Override
 	public Page<PushMessageEntity> findExamplePaginated(Example<PushMessageEntity> example, int page, int size) {
 		return repo.findAll(example, PageRequest.of(page, size));
-	}
-
-	@Override
-	public BaseModel deleteMessageBySessionId(Long sessionId) {
-		if (sessionId != null) {
-			String hql = "DELETE PushMessageEntity WHERE sessionId=:sessionId";
-			int result = 0;
-			Query query = em.createQuery(hql);
-			query.setParameter("sessionId", sessionId);
-			try {
-				result = query.executeUpdate();
-			} catch (Exception e) {
-				result = 0;
-			}
-			if (result > 0) {
-				return new CommonResponse(PushMessageConstant.MESSAGE_DELETED, true);
-			} else {
-				return new CommonResponse(PushMessageConstant.MESSAGE_NOT_FOUND, true);
-			}
-		} else {
-			return new CommonResponse(PushMessageConstant.MESSAGE_NOT_FOUND, true);
-		}
 	}
 }

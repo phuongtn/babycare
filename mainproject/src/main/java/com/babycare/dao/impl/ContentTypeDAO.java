@@ -21,7 +21,7 @@ public class ContentTypeDAO extends AbstractJpaDao<ContentTypeEntity> implements
 
 	@Override
 	public BaseModel fetchContentTypes() {
-		String hql = "FROM ContentTypeEntity";
+		final String hql = "FROM ContentTypeEntity";
 		try {
 			List<BaseModel> result = (List<BaseModel>) em.createQuery(hql).getResultList();
 			if (result != null || !result.isEmpty()) {

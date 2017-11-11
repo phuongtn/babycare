@@ -44,6 +44,12 @@ public class ContentController {
 		return Response(model);
 	}
 
+	@PostMapping(value = "/get/by/contenttype", headers = "Accept=application/json", produces = "application/json")
+	public @ResponseBody ResponseEntity<BaseModel> getByContentTypeId(@RequestBody Content body) {
+		BaseModel model = contentService.getByContentTypeId(body);
+		return Response(model);
+	}
+
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof ContentEntity) {
 			return new ResponseEntity<BaseModel>(model, HttpStatus.OK);

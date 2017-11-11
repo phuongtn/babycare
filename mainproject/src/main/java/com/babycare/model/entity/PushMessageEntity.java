@@ -14,9 +14,11 @@ import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
 import com.babycare.model.payload.PushMessage;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "pushmessage", catalog = "babycare")
+@JsonIgnoreProperties({"requestBySessionId"})
 public class PushMessageEntity extends PushMessage implements Serializable {
 
 	private static final long serialVersionUID = 1L;

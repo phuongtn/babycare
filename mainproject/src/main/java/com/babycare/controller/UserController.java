@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -76,10 +75,8 @@ public class UserController {
 		} else {
 			return new ResponseEntity<BaseModel>(new CommonResponseEx().setIsSuccess(false).setMesage("Cannot delete Account"), HttpStatus.CONFLICT);
 		}
-
 	}
 
-	
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof UserEntity) {
 			//return new ResponseEntity<BaseModel>(model, HttpStatus.OK);

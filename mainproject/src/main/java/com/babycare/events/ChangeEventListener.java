@@ -52,6 +52,8 @@ public class ChangeEventListener extends BaseApplicationListener {
 				onFCMReconnectSuccessful();
 			} else if (baseModel instanceof RemoveUserEvent) {
 				onRemoveUserEvent((RemoveUserEvent)baseModel);
+			} else if (baseModel instanceof CleanUpPushMessageEvent) {
+				onCleanUpPushMessageEvent();
 			}
 		}
 	}
@@ -117,5 +119,9 @@ public class ChangeEventListener extends BaseApplicationListener {
 				pushMessageService.deleteMessageBySessionId(sessionEntity.getSessionId());
 			}
 		}
+	}
+	
+	private void onCleanUpPushMessageEvent() {
+		pushMessageService.cleanUpPushMessage();
 	}
 }

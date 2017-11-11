@@ -12,7 +12,6 @@ import com.babycare.dao.AbstractJpaDao;
 import com.babycare.dao.IChildDAO;
 import com.babycare.model.BaseModel;
 import com.babycare.model.ErrorConstant;
-import com.babycare.model.ResultList;
 import com.babycare.model.common.ChildExt;
 import com.babycare.model.common.ResultListEx;
 import com.babycare.model.entity.ChildEntity;
@@ -147,9 +146,10 @@ public class ChildDAO extends AbstractJpaDao<ChildEntity> implements IChildDAO {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
 			Long userId = payload.getUserId();
-			String hql = "FROM ChildEntity as child WHERE child.userId = ?";
+			final String hql = "FROM ChildEntity as child WHERE child.userId =:userId";
 			try {
-				List<ChildEntity> result = (List<ChildEntity>)em.createQuery(hql).setParameter(0, userId).getResultList();
+				@SuppressWarnings("unchecked")
+				List<ChildEntity> result = (List<ChildEntity>)em.createQuery(hql).setParameter("userId", userId).getResultList();
 				if (result != null && !result.isEmpty()) {
 					List<ChildExt> childList = new ArrayList<ChildExt>();
 					for (ChildEntity entity : result) {
@@ -157,7 +157,7 @@ public class ChildDAO extends AbstractJpaDao<ChildEntity> implements IChildDAO {
 					}
 					return new ResultListEx<ChildExt>(childList);
 				} else {
-					return new ResultListEx<BaseModel>(new ArrayList<>());
+					return new ResultListEx<BaseModel>(new ArrayList<BaseModel>());
 				}
 			} catch (Exception e) {
 				return ErrorConstant.getError(ErrorConstant.ERROR_FETCH_CHILD);

@@ -15,7 +15,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.babycare.model.payload.Child;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -98,7 +97,6 @@ public class ChildEntity extends Child implements Serializable {
 		return region;
 	}
 
-
 	@Override
 	public boolean equals(Object rhs) {
 		return EqualsBuilder.reflectionEquals(this, rhs, false);
@@ -121,7 +119,6 @@ public class ChildEntity extends Child implements Serializable {
 	public UserEntity getUser() {
 		return user;
 	}
-
 
 	public void setUser(UserEntity user) {
 		this.user = user;

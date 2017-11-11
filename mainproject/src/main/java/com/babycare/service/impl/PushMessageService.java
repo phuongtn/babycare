@@ -1,14 +1,21 @@
 package com.babycare.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.babycare.dao.IOperations;
 import com.babycare.dao.IPushMessageDAO;
+import com.babycare.events.ChangeEvent;
+import com.babycare.events.CleanUpPushMessageEvent;
 import com.babycare.model.BaseModel;
 import com.babycare.model.entity.PushMessageEntity;
 import com.babycare.model.payload.PushMessage;
@@ -16,7 +23,9 @@ import com.babycare.service.AbstractJpaService;
 import com.babycare.service.IPushMessageService;
 
 @Service(value = "pushMessageService")
-public class PushMessageService extends AbstractJpaService<PushMessageEntity> implements IPushMessageService {
+public class PushMessageService extends AbstractJpaService<PushMessageEntity> implements IPushMessageService, ApplicationEventPublisherAware {
+	private final Logger LOG = LoggerFactory.getLogger(PushMessageService.class);
+	private ApplicationEventPublisher publisher;
 	@Autowired
 	@Qualifier("pushMessageDAO")
 	private IPushMessageDAO pushMessageDAO;
@@ -79,6 +88,22 @@ public class PushMessageService extends AbstractJpaService<PushMessageEntity> im
 	@Override
 	public BaseModel deleteMessageBySessionId(Long sessionId) {
 		return pushMessageDAO.deleteMessageBySessionId(sessionId);
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+		this.publisher = applicationEventPublisher;
+	}
+
+	@Scheduled(fixedRate = 1000 * 60)
+	void cleanUpPushMessages() {
+		LOG.debug("PHUONG, TEST SCHEDULE");
+		publisher.publishEvent(new ChangeEvent(new CleanUpPushMessageEvent()));
+	}
+
+	@Override
+	public void cleanUpPushMessage() {
+		pushMessageDAO.cleanUpPushMessage();
 	}
 
 }

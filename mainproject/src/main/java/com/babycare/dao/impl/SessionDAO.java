@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -18,7 +17,6 @@ import com.babycare.model.ResultList;
 import com.babycare.model.UserConstant;
 import com.babycare.model.entity.SessionEntity;
 import com.babycare.model.payload.Session;
-import com.wedevol.xmpp.server.CcsClient;
 
 @Repository
 @Component
@@ -173,7 +171,7 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 
 	private BaseModel getSessionByHardwareId(String hardwareId) {
 		if (StringUtils.isNotEmpty(hardwareId)) {
-			String hql = "FROM SessionEntity WHERE hardwareId = ?";
+			final String hql = "FROM SessionEntity WHERE hardwareId = ?";
 			SessionEntity entity = null;
 			try {
 				entity = (SessionEntity) em.createQuery(hql).setParameter(0, hardwareId).getSingleResult();
@@ -299,19 +297,26 @@ public class SessionDAO extends AbstractJpaDao<SessionEntity> implements ISessio
 		}
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public BaseModel getSessionListByUserId(Long userId) {
-		String hql = "FROM SessionEntity WHERE user.userId = ?";
-		try {
-			List<BaseModel> result = (List<BaseModel>)em.createQuery(hql).setParameter(0, userId).getResultList();
-			if (result != null || !result.isEmpty()) {
-				ResultList<BaseModel> resultList = new ResultList<BaseModel>(result);
-				return resultList;
-			} else {
-				return new ResultList<BaseModel>(new ArrayList<>());
+		if (userId != null) {
+			try {
+				final String hql = "FROM SessionEntity WHERE user.userId =:userId";
+				@SuppressWarnings("unchecked")
+				List<BaseModel> result = (List<BaseModel>)em.createQuery(hql).
+						setParameter("userId", userId).getResultList();
+				if (result != null || !result.isEmpty()) {
+					ResultList<BaseModel> resultList = new ResultList<BaseModel>(result);
+					return resultList;
+				} else {
+					return new ResultList<BaseModel>(new ArrayList<>());
+				}
+			} catch (Exception e) {
+				return ErrorConstant.getError(ErrorConstant.ERROR_FETCH_SESSION);
 			}
-		} catch (Exception e) {
-			return ErrorConstant.getError(ErrorConstant.ERROR_FETCH_SESSION);
+		} else {
+			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		}
 	}
 }

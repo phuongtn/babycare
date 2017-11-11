@@ -49,7 +49,7 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 
 	private BaseModel getUserByEmailAndProvider(String email, String provider) {
 		if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(provider)) {
-			String hql = "FROM UserEntity as usr WHERE usr.provider = ? AND usr.email = ?";
+			final String hql = "FROM UserEntity as usr WHERE usr.provider = ? AND usr.email = ?";
 			UserEntity entity = null;
 			try {
 				entity = (UserEntity) em.createQuery(hql).setParameter(0, provider).setParameter(1, email)

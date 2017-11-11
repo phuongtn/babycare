@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,13 +17,26 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.babycare.model.payload.Content;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "content", catalog = "babycare")
+@JsonIdentityInfo(
+generator = ObjectIdGenerators.PropertyGenerator.class, 
+property = "contentId")
+@JsonIgnoreProperties({"requestBySessionId"})
 public class ContentEntity extends Content implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private ContentTypeEntity contentType;
+
+	@Override
+	@Column(name="contenttypeid", insertable = false, updatable = false)
+	public Long getContentTypeId() {
+		return contentTypeId;
+	}
 
 	@Override
 	@Id
@@ -34,12 +46,15 @@ public class ContentEntity extends Content implements Serializable {
 		return contentId;
 	}
 
-	@Override
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name = "contenttypeid", referencedColumnName = "contenttypeid", updatable=false,
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "contenttypeid", referencedColumnName = "contenttypeid", 
 		foreignKey = @ForeignKey(name = "FK_content_contenttype"))
 	public ContentTypeEntity getContentType() {
 		return contentType;
+	}
+
+	public void setContentType(ContentTypeEntity contentType) {
+		this.contentType = contentType;
 	}
 
 	@Override
@@ -119,7 +134,7 @@ public class ContentEntity extends Content implements Serializable {
 		.setRegion(content.getRegion())
 		.setStart(content.getStart())
 		.setTimeUnit(content.getTimeUnit());
-		//this.contentType = new ContentTypeEntity(content.getContentType());
+		 this.contentType = new ContentTypeEntity(content.getContentType());
 	}
 	
 	@Override

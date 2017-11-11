@@ -65,8 +65,22 @@ public class PushMessageCotroller {
 
 	@PostMapping(value = "/pager/get/pending", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<Page<PushMessageEntity>> getPending(@RequestBody PagerRequest body) {
-		Example<PushMessageEntity> example = Example.of(new PushMessageEntity().setSendStatus("PENDING"));
+		/*Example<PushMessageEntity> example = Example.of(new PushMessageEntity().setSendStatus("PENDING"));
 		Page<PushMessageEntity> page = pushMessageService.findExamplePaginated(example, body.getPage(), body.getSize());
-		return new ResponseEntity<>(page, HttpStatus.OK);
+		return new ResponseEntity<>(page, HttpStatus.OK);*/
+		return new ResponseEntity<Page<PushMessageEntity>>(getMessageByStatus(body, "PENDING"), HttpStatus.OK);
+	}
+	
+	@PostMapping(value = "/pager/get/sent", headers = "Accept=application/json", produces = "application/json")
+	public @ResponseBody ResponseEntity<Page<PushMessageEntity>> getSent(@RequestBody PagerRequest body) {
+		return new ResponseEntity<Page<PushMessageEntity>>(getMessageByStatus(body, "SENT"), HttpStatus.OK);
+		/*Example<PushMessageEntity> example = Example.of(new PushMessageEntity().setSendStatus("PENDING"));
+		Page<PushMessageEntity> page = pushMessageService.findExamplePaginated(example, body.getPage(), body.getSize());
+		return new ResponseEntity<>(page, HttpStatus.OK);*/
+	}
+
+	private Page<PushMessageEntity> getMessageByStatus(PagerRequest body, String status) {
+		Example<PushMessageEntity> example = Example.of(new PushMessageEntity().setSendStatus(status));
+		return pushMessageService.findExamplePaginated(example, body.getPage(), body.getSize());
 	}
 }

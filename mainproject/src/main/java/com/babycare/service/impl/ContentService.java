@@ -2,6 +2,9 @@ package com.babycare.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.babycare.dao.IContentDAO;
 import com.babycare.dao.IOperations;
@@ -40,5 +43,30 @@ public class ContentService extends AbstractJpaService<ContentEntity> implements
 	@Override
 	protected IOperations<ContentEntity> getDao() {
 		return contentDAO;
+	}
+
+	@Override
+	public Page<ContentEntity> findPaginated(Pageable pageable) {
+		return contentDAO.findPaginated(pageable);
+	}
+
+	@Override
+	public Page<ContentEntity> findPaginated(int page, int size) {
+		return contentDAO.findPaginated(page, size);
+	}
+
+	@Override
+	public Page<ContentEntity> findExamplePaginated(Example<ContentEntity> example, Pageable pageable) {
+		return contentDAO.findExamplePaginated(example, pageable);
+	}
+
+	@Override
+	public Page<ContentEntity> findExamplePaginated(Example<ContentEntity> example, int page, int size) {
+		return contentDAO.findExamplePaginated(example, page, size);
+	}
+
+	@Override
+	public BaseModel getByContentTypeId(Content payload) {
+		return contentDAO.getByContentTypeId(payload);
 	}
 }

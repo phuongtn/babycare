@@ -14,9 +14,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.babycare.model.payload.ContentType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "contenttype", catalog = "babycare")
+@JsonIgnoreProperties({"requestBySessionId"})
 public class ContentTypeEntity extends ContentType implements Serializable {
 
 	private static final long serialVersionUID = 1L;

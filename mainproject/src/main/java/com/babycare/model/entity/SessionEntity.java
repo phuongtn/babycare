@@ -74,10 +74,8 @@ public class SessionEntity extends Session implements Serializable {
 		return userId;
 	}
 
-	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "userid", referencedColumnName = "userid", 
-		foreignKey = @ForeignKey(name = "FK_session_user"))
+	@JoinColumn(name = "userid", referencedColumnName = "userid", foreignKey = @ForeignKey(name = "FK_session_user"))
 	@JsonIgnoreProperties({"sessions"})
 	public UserEntity getUser() {
 		return user;
