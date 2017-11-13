@@ -23,7 +23,7 @@ import com.babycare.service.impl.PushMessageService;
 
 @RestController(value = "pushMessageController")
 @RequestMapping("pushmessage")
-public class PushMessageCotroller {
+public class PushMessageController {
 	@Autowired
 	@Qualifier("pushMessageService")
 	private PushMessageService pushMessageService;

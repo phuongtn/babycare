@@ -134,7 +134,9 @@ public class ContentEntity extends Content implements Serializable {
 		.setRegion(content.getRegion())
 		.setStart(content.getStart())
 		.setTimeUnit(content.getTimeUnit());
-		 this.contentType = new ContentTypeEntity(content.getContentType());
+		 if (content.getContentType() != null) {
+			 this.contentType = new ContentTypeEntity(content.getContentType());
+		 }
 	}
 	
 	@Override
