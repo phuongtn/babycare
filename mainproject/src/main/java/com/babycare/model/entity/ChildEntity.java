@@ -45,6 +45,7 @@ public class ChildEntity extends Child implements Serializable {
 		this.dob = child.getDob();
 		this.gender = child.getGender();
 		this.region = child.getRegion();
+		this.user = new UserEntity(child.getUser()); 
 	}
 
 	@Override
@@ -60,6 +61,13 @@ public class ChildEntity extends Child implements Serializable {
 	public Long getUserId() {
 		return userId;
 	}
+	
+	/*
+	@Override
+	public Long getUserId() {
+		return userId;
+	}
+*/
 
 	@Override
 	@Column(name="name")

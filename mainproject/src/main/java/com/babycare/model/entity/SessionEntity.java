@@ -70,6 +70,7 @@ public class SessionEntity extends Session implements Serializable {
 	}
 
 	@Override
+	@Column(name="userid", insertable = false, updatable = false)
 	public Long getUserId() {
 		return userId;
 	}
