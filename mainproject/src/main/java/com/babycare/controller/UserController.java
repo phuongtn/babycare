@@ -80,7 +80,7 @@ public class UserController {
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof UserEntity) {
 			//return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
-			return new ResponseEntity<BaseModel>((User)model, HttpStatus.OK);
+			return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
 		} else if (model instanceof Error) {
 			return new ResponseEntity<BaseModel>(model, HttpStatus.CONFLICT);
 		} else if (model instanceof CommonResponse) {
