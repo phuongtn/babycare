@@ -69,7 +69,7 @@ public class PushMessageService extends AbstractJpaService<PushMessageEntity> im
 	}
 
 	@Override
-	public Page<PushMessageEntity> findPaginated(int page, int size) {
+	public Page<PushMessageEntity> findPaginated(Integer page, Integer size) {
 		return pushMessageDAO.findPaginated(page, size);
 	}
 
@@ -84,7 +84,7 @@ public class PushMessageService extends AbstractJpaService<PushMessageEntity> im
 	}
 
 	@Override
-	public Page<PushMessageEntity> findExamplePaginated(Example<PushMessageEntity> example, int page, int size) {
+	public Page<PushMessageEntity> findExamplePaginated(Example<PushMessageEntity> example, Integer page, Integer size) {
 		return pushMessageDAO.findExamplePaginated(example, page, size);
 	}
 

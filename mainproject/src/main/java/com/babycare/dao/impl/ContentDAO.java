@@ -96,7 +96,7 @@ public class ContentDAO extends AbstractJpaDao<ContentEntity> implements IConten
 	}
 
 	@Override
-	public Page<ContentEntity> findPaginated(int page, int size) {
+	public Page<ContentEntity> findPaginated(Integer page, Integer size) {
 		return repo.findAll(PageRequest.of(page, size));
 	}
 
@@ -106,7 +106,7 @@ public class ContentDAO extends AbstractJpaDao<ContentEntity> implements IConten
 	}
 
 	@Override
-	public Page<ContentEntity> findExamplePaginated(Example<ContentEntity> example, int page, int size) {
+	public Page<ContentEntity> findExamplePaginated(Example<ContentEntity> example, Integer page, Integer size) {
 		return repo.findAll(example, PageRequest.of(page, size));
 	}
 

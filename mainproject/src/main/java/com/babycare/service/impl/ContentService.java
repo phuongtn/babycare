@@ -51,7 +51,7 @@ public class ContentService extends AbstractJpaService<ContentEntity> implements
 	}
 
 	@Override
-	public Page<ContentEntity> findPaginated(int page, int size) {
+	public Page<ContentEntity> findPaginated(Integer page, Integer size) {
 		return contentDAO.findPaginated(page, size);
 	}
 
@@ -61,7 +61,7 @@ public class ContentService extends AbstractJpaService<ContentEntity> implements
 	}
 
 	@Override
-	public Page<ContentEntity> findExamplePaginated(Example<ContentEntity> example, int page, int size) {
+	public Page<ContentEntity> findExamplePaginated(Example<ContentEntity> example, Integer page, Integer size) {
 		return contentDAO.findExamplePaginated(example, page, size);
 	}
 

@@ -168,7 +168,7 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 	}
 
 	@Override
-	public Page<PushMessageEntity> findPaginated(int page, int size) {
+	public Page<PushMessageEntity> findPaginated(Integer page, Integer size) {
 		return repo.findAll(PageRequest.of(page, size));
 	}
 
@@ -178,7 +178,7 @@ public class PushMessageDAO extends AbstractJpaDao<PushMessageEntity> implements
 	}
 
 	@Override
-	public Page<PushMessageEntity> findExamplePaginated(Example<PushMessageEntity> example, int page, int size) {
+	public Page<PushMessageEntity> findExamplePaginated(Example<PushMessageEntity> example, Integer page, Integer size) {
 		return repo.findAll(example, PageRequest.of(page, size));
 	}
 }
