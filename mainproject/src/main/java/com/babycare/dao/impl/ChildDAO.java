@@ -165,5 +165,4 @@ public class ChildDAO extends AbstractJpaDao<ChildEntity> implements IChildDAO {
 		}
 	}
 
-	
 }

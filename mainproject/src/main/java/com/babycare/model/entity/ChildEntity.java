@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,7 +27,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @JsonIdentityInfo(
 generator = ObjectIdGenerators.PropertyGenerator.class, 
 property = "childId")
-@JsonIgnoreProperties({"userId","requestBySessionId"})
+/*@JsonIgnoreProperties({"userId","requestBySessionId"})*/
+@JsonIgnoreProperties({"requestBySessionId"})
 public class ChildEntity extends Child implements Serializable {
 	/**
 	 * 
@@ -45,7 +47,7 @@ public class ChildEntity extends Child implements Serializable {
 		this.dob = child.getDob();
 		this.gender = child.getGender();
 		this.region = child.getRegion();
-		this.user = new UserEntity(child.getUser()); 
+		this.user = new UserEntity(child.getUser());
 	}
 
 	@Override
@@ -61,13 +63,6 @@ public class ChildEntity extends Child implements Serializable {
 	public Long getUserId() {
 		return userId;
 	}
-	
-	/*
-	@Override
-	public Long getUserId() {
-		return userId;
-	}
-*/
 
 	@Override
 	@Column(name="name")
@@ -124,6 +119,7 @@ public class ChildEntity extends Child implements Serializable {
 	@JoinColumn(name = "userid", referencedColumnName = "userid", 
 		foreignKey = @ForeignKey(name = "FK_children_user"))
 	@JsonIgnoreProperties({"children"})
+	//@JsonIgnoreProperties({"user"})
 	public UserEntity getUser() {
 		return user;
 	}
