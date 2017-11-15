@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @JsonIdentityInfo(
 generator = ObjectIdGenerators.PropertyGenerator.class, 
 property = "sessionId")
-@JsonIgnoreProperties({"oldPushId", "userId","requestBySessionId"})
+@JsonIgnoreProperties({"oldPushId", "user", "requestBySessionId"})
 public class SessionEntity extends Session implements Serializable {
 
 	private static final long serialVersionUID = 856603274488076082L;

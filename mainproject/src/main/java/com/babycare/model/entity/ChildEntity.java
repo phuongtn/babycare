@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 generator = ObjectIdGenerators.PropertyGenerator.class, 
 property = "childId")
 /*@JsonIgnoreProperties({"userId","requestBySessionId"})*/
-@JsonIgnoreProperties({"requestBySessionId"})
+@JsonIgnoreProperties({"user","requestBySessionId"})
 public class ChildEntity extends Child implements Serializable {
 	/**
 	 * 
