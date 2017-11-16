@@ -49,10 +49,10 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 
 	private BaseModel getUserByEmailAndProvider(String email, String provider) {
 		if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(provider)) {
-			final String hql = "FROM UserEntity as usr WHERE usr.provider = ? AND usr.email = ?";
+			final String hql = "FROM UserEntity as usr WHERE usr.provider=:provider AND usr.email=:email";
 			UserEntity entity = null;
 			try {
-				entity = (UserEntity) em.createQuery(hql).setParameter(0, provider).setParameter(1, email)
+				entity = (UserEntity) em.createQuery(hql).setParameter("provider", provider).setParameter("email", email)
 						.getSingleResult();
 			} catch (Exception e) {
 				entity = null;
@@ -115,11 +115,17 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 		if (id == null) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_INPUT_ERROR);
 		} else {
-			UserEntity enntity = findOne(id);
-			if (enntity == null) {
-				return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
+			final String hql = "FROM UserEntity as usr WHERE usr.userId = :userId ";
+			UserEntity entity = null;
+			try {
+				entity = (UserEntity) em.createQuery(hql).setParameter("userId", id).getSingleResult();
+			} catch (Exception e) {
+				entity = null;
+			}
+			if (entity != null) {
+				return entity;
 			} else {
-				return enntity;
+				return ErrorConstant.getError(ErrorConstant.ERROR_USER_NOT_EXIST);
 			}
 		}
 	}
