@@ -104,6 +104,7 @@ public class UserEntity extends User implements Serializable {
 	@OneToMany(cascade = {CascadeType.REMOVE})
 	@JoinColumn(name="userid")
 	@JsonProperty("sessions")
+	@JsonIgnoreProperties({"user"})
 	@JsonManagedReference
 	public Set<SessionEntity> getSessionEntities() {
 		return sessionEntities;

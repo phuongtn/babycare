@@ -28,7 +28,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @JsonIdentityInfo(
 generator = ObjectIdGenerators.PropertyGenerator.class, 
 property = "sessionId")
-@JsonIgnoreProperties({"oldPushId", "user", "requestBySessionId"})
+/*@JsonIgnoreProperties({"oldPushId", "user", "requestBySessionId"})*/
+@JsonIgnoreProperties({"oldPushId", "requestBySessionId"})
 public class SessionEntity extends Session implements Serializable {
 
 	private static final long serialVersionUID = 856603274488076082L;
@@ -77,7 +78,7 @@ public class SessionEntity extends Session implements Serializable {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "userid", referencedColumnName = "userid", foreignKey = @ForeignKey(name = "FK_session_user"))
-	@JsonIgnoreProperties({"sessions"})
+	@JsonIgnoreProperties({"sessions", "children"})
 	public UserEntity getUser() {
 		return user;
 	}
