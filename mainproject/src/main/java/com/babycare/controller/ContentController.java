@@ -10,6 +10,8 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ResultList;
+import com.babycare.model.common.ResultListEx;
 import com.babycare.model.entity.ContentEntity;
 import com.babycare.model.payload.Content;
 import com.babycare.model.response.pager.PagerContent;
@@ -98,6 +101,37 @@ public class ContentController {
 	 * HttpStatus.OK); }
 	 */
 
+	
+	@PostMapping(value = "/get/by/week/contentypeid", headers = "Accept=application/json", produces = "application/json")
+	public @ResponseBody ResponseEntity<BaseModel> getContentByWeekAndContentTypeId(
+			@RequestParam(value = "weekNumber", required = false) final Integer weekNumber, 
+			@RequestParam(value = "contentTypeId", required = false) final Long contentTypeId) {
+		BaseModel model = contentService.getContentByWeekAndContentTypeId(weekNumber, contentTypeId);
+		return Response(model);
+	}
+
+	@PostMapping(value = "/get/by/week", headers = "Accept=application/json", produces = "application/json")
+	public @ResponseBody ResponseEntity<BaseModel> getContentByWeekAndContentTypeId(
+			@RequestParam(value = "weekNumber", required = false) final Integer weekNumber) {
+		BaseModel model = contentService.getContentByWeek(weekNumber);
+		return Response(model);
+	}
+
+	@PostMapping(value = "/get/by/contentypeid/childid", headers = "Accept=application/json", produces = "application/json")
+	public @ResponseBody ResponseEntity<BaseModel> getContentByContentTypeIdChildId(
+			@RequestParam(value = "contentTypeId", required = false) final Long contentTypeId ,
+			@RequestParam(value = "childId", required = false) final Long childId) {
+		BaseModel model = contentService.getContentByContentTypeIdChildId(contentTypeId, childId);
+		return Response(model);
+	}
+
+	@PostMapping(value = "/get/by/childid", headers = "Accept=application/json", produces = "application/json")
+	public @ResponseBody ResponseEntity<BaseModel> getContentByChildId(
+			@RequestParam(value = "childId", required = false) final Long childId) {
+		BaseModel model = contentService.getContentByChildId(childId);
+		return Response(model);
+	}
+
 	private @ResponseBody ResponseEntity<BaseModel> Response(BaseModel model) {
 		if (model instanceof ContentEntity) {
 			return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
@@ -105,7 +139,9 @@ public class ContentController {
 			return new ResponseEntity<BaseModel>(model, HttpStatus.CONFLICT);
 		} else if (model instanceof ResultList) {
 			return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
-		} else {
+		} else if (model instanceof ResultListEx) {
+			return new ResponseEntity<BaseModel>(model, HttpStatus.OK);
+		}else {
 			return new ResponseEntity<BaseModel>((Content) null, HttpStatus.CONFLICT);
 		}
 	}

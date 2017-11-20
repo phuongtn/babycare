@@ -7,11 +7,17 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.babycare.Utils;
 import com.babycare.dao.AbstractJpaDao;
+import com.babycare.dao.IChildDAOPagingRepo;
+import com.babycare.dao.IUserDAOPagingRepo;
 import com.babycare.dao.IUserDao;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
@@ -26,7 +32,8 @@ import com.babycare.service.ISessionService;
 @Qualifier("userDAO")
 public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 	public static final Logger logger = Logger.getLogger(UserDAO.class.getName());
-
+	@Autowired
+	private IUserDAOPagingRepo repo;
 	@Autowired
 	@Qualifier("sessionService")
 	private ISessionService sessionService;
@@ -226,6 +233,26 @@ public class UserDAO extends AbstractJpaDao<UserEntity> implements IUserDao {
 				return ErrorConstant.getError(ErrorConstant.ERROR_REMOVE_USER);
 			}
 		}
+	}
+
+	@Override
+	public Page<UserEntity> findPaginated(Pageable pageable) {
+		return repo.findAll(pageable);
+	}
+
+	@Override
+	public Page<UserEntity> findPaginated(Integer page, Integer size) {
+		return repo.findAll(PageRequest.of(page, size));
+	}
+
+	@Override
+	public Page<UserEntity> findExamplePaginated(Example<UserEntity> example, Pageable pageable) {
+		return repo.findAll(example, pageable);
+	}
+
+	@Override
+	public Page<UserEntity> findExamplePaginated(Example<UserEntity> example, Integer page, Integer size) {
+		return repo.findAll(example, PageRequest.of(page, size));
 	}
 
 }

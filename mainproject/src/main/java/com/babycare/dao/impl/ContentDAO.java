@@ -133,4 +133,36 @@ public class ContentDAO extends AbstractJpaDao<ContentEntity> implements IConten
 		}
 	}
 
+	@Override
+	public BaseModel getContentByWeekAndContentTypeId(Integer weekNumber, Long contentTypeId) {
+		try {
+			final String hql = "FROM ContentEntity C WHERE :weekNumber <=C.end AND C.contentTypeId = :contentTypeId ORDER BY C.end ASC";
+			ContentEntity entity = (ContentEntity) em.createQuery(hql).
+					setParameter("weekNumber", weekNumber).
+					setParameter("contentTypeId", contentTypeId).
+					setMaxResults(1).getSingleResult();
+			if (entity != null) {
+				return entity;
+			} else {
+				return ErrorConstant.getError(ErrorConstant.ERROR_RECORD_NOT_FOUND);
+			}
+		} catch (Exception e) {
+			return ErrorConstant.getError(ErrorConstant.ERROR_RECORD_NOT_FOUND);
+		}
+	}
+
+	@Override
+	public BaseModel getContentByWeek(Integer weekNumber) {
+		return null;
+	}
+
+	@Override
+	public BaseModel getContentByContentTypeIdChildId(Long contentTypeId, Long ChildId) {
+		return null;
+	}
+
+	@Override
+	public BaseModel getContentByChildId(Long ChildId) {
+		return null;
+	}
 }

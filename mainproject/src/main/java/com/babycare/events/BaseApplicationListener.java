@@ -9,6 +9,8 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
 import com.babycare.service.IChildService;
+import com.babycare.service.IContentService;
+import com.babycare.service.IContentTypeService;
 import com.babycare.service.IPushMessageService;
 import com.babycare.service.ISessionService;
 import com.babycare.service.IUserService;
@@ -38,6 +40,14 @@ public abstract class BaseApplicationListener implements ApplicationListener<App
 	@Qualifier("CcsClient")
 	protected CcsClient ccsClient;
 	
+	@Autowired
+	@Qualifier("contentService")
+	protected IContentService contentService;
+
+	@Autowired
+	@Qualifier("contentTypeService")
+	protected IContentTypeService contentTyeService;
+
 	public abstract void onApplicationEvent(ApplicationEvent event);
 
 }

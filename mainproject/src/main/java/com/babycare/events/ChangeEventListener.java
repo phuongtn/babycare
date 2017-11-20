@@ -18,9 +18,12 @@ import com.babycare.model.BaseModel;
 import com.babycare.model.MessageConstant;
 import com.babycare.model.ResultList;
 import com.babycare.model.entity.ChildEntity;
+import com.babycare.model.entity.ContentTypeEntity;
 import com.babycare.model.entity.PushMessageEntity;
 import com.babycare.model.entity.SessionEntity;
 import com.babycare.model.entity.UserEntity;
+import com.babycare.model.payload.ContentType;
+import com.babycare.utils.DateTimeUtils;
 import com.wedevol.xmpp.bean.CcsOutMessage;
 import com.wedevol.xmpp.util.PushMessageFactory;
 import com.wedevol.xmpp.util.PushMessageStatus;
@@ -54,6 +57,8 @@ public class ChangeEventListener extends BaseApplicationListener {
 				onRemoveUserEvent((RemoveUserEvent)baseModel);
 			} else if (baseModel instanceof CleanUpPushMessageEvent) {
 				onCleanUpPushMessageEvent();
+			} else if (baseModel instanceof PushContentMessageEvent) {
+				
 			}
 		}
 	}
@@ -69,7 +74,7 @@ public class ChangeEventListener extends BaseApplicationListener {
 					String messageId = Util.getUniqueMessageId();
 					Map<String, String> dataPayload = new HashMap<String, String>();
 					dataPayload.put(Util.PAYLOAD_ATTRIBUTE_MESSAGE, message);
-					dataPayload.put(Util.PAYLOAD_ATTRIBUTE_ACTION,action);
+					dataPayload.put(Util.PAYLOAD_ATTRIBUTE_ACTION, action);
 					dataPayload.put(Util.PAYLOAD_ATTRIBUTE_MESSAGE_ID, messageId);
 					CcsOutMessage ccsOutMessage = PushMessageFactory.
 							createSimpleCCsOutMessage(entity.getPushId(), messageId, dataPayload);
@@ -96,20 +101,46 @@ public class ChangeEventListener extends BaseApplicationListener {
 
 	private void onFCMReconnectSuccessful() {
 		Example<PushMessageEntity> example = Example.of(new PushMessageEntity().setSendStatus("PENDING"));
-		Page<PushMessageEntity> page;
-		do {
-			page = pushMessageService.findExamplePaginated(example, 0, 10);
+		Page<PushMessageEntity> page = pushMessageService.findExamplePaginated(example, 0, 10);
+		for(;;) {
 			List<PushMessageEntity> list = page.getContent();
-			for (PushMessageEntity item : list) {
-				try {
-					ccsClient.send(item.getPayLoad());
-					item.setSendStatus("SENT");
-					pushMessageService.update(item);
-				} catch (Exception e) {
-					
+			if (list != null && !list.isEmpty()) {
+				for (PushMessageEntity item : list) {
+					try {
+						ccsClient.send(item.getPayLoad());
+						item.setSendStatus("SENT");
+						pushMessageService.update(item);
+					} catch (Exception e) {
+						
+					}
+				}
+				if (page.hasNext()) {
+					page = pushMessageService.findExamplePaginated(example, page.nextPageable());
+				} else {
+					break;
+				}
+			} else {
+				break;
+			}
+		}
+	/*	
+		do {
+			List<PushMessageEntity> list = page.getContent();
+			if (list != null && !list.isEmpty()) {
+				for (PushMessageEntity item : list) {
+					try {
+						ccsClient.send(item.getPayLoad());
+						item.setSendStatus("SENT");
+						pushMessageService.update(item);
+					} catch (Exception e) {
+						
+					}
+				}
+				if (page.hasNext()) {
+					page = pushMessageService.findExamplePaginated(example, page.nextPageable());
 				}
 			}
-		} while(page != null && !page.isLast()); 
+		} while (page != null && !page.isLast()); */
 	}
 
 	private void onRemoveUserEvent(RemoveUserEvent event) {
@@ -124,4 +155,43 @@ public class ChangeEventListener extends BaseApplicationListener {
 	private void onCleanUpPushMessageEvent() {
 		pushMessageService.cleanUpPushMessage();
 	}
+	
+	private void onPushContentMessageEvent() {
+		Page<UserEntity> page = userService.findPaginated(0, 10);
+		List<ContentTypeEntity> contentList = contentTyeService.findAll();
+		for(;;) {
+			List<UserEntity> list = page.getContent();
+			if (list != null && !list.isEmpty()) {
+				for (UserEntity item : list) {
+					Set<ChildEntity> children = item.getChildEntities();
+					if (children != null && !children.isEmpty()) {
+						for (ChildEntity child : children) {
+							Long dob = child.getDob();
+							if (dob != null) {
+								int weekDiff = DateTimeUtils.getWeekDiffFromNow(dob);
+								BaseModel baseModel = sessionService.getSessionListByUserId(child.getUserId());
+								if (baseModel instanceof ResultList) {
+									@SuppressWarnings("unchecked")
+									ResultList<SessionEntity> sessionContainer = (ResultList<SessionEntity>) baseModel;
+									List<SessionEntity> sessions = sessionContainer.getResultList();
+									if (sessions != null && !sessions.isEmpty()) {
+									
+									}
+								}
+							}
+
+						}
+					}
+				}
+				if (page.hasNext()) {
+					page = userService.findPaginated(page.nextPageable());
+				} else {
+					break;
+				}
+			} else {
+				break;
+			}
+		} 
+	}
+
 }

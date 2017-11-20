@@ -33,7 +33,7 @@ public class ContentTypeEntity extends ContentType implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="contenttypeid")
-	public Integer getContentTypeId() {
+	public Long getContentTypeId() {
 		return contentTypeId;
 	}
 	

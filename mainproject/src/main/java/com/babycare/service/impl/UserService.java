@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.babycare.dao.IOperations;
@@ -106,5 +109,25 @@ public class UserService extends AbstractJpaService<UserEntity> implements IUser
 		}
 		//return entity;
 		return userDao.deleteUser(user);
+	}
+
+	@Override
+	public Page<UserEntity> findPaginated(Pageable pageable) {
+		return userDao.findPaginated(pageable);
+	}
+
+	@Override
+	public Page<UserEntity> findPaginated(Integer page, Integer size) {
+		return userDao.findPaginated(page, size);
+	}
+
+	@Override
+	public Page<UserEntity> findExamplePaginated(Example<UserEntity> example, Pageable pageable) {
+		return userDao.findExamplePaginated(example, pageable);
+	}
+
+	@Override
+	public Page<UserEntity> findExamplePaginated(Example<UserEntity> example, Integer page, Integer size) {
+		return userDao.findExamplePaginated(example, page, size);
 	}
 }

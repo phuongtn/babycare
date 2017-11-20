@@ -11,7 +11,7 @@ import com.babycare.dao.AbstractJpaDao;
 import com.babycare.dao.IContentTypeDAO;
 import com.babycare.model.BaseModel;
 import com.babycare.model.ErrorConstant;
-import com.babycare.model.ResultList;
+import com.babycare.model.common.ResultListEx;
 import com.babycare.model.entity.ContentTypeEntity;
 
 @Repository
@@ -25,10 +25,10 @@ public class ContentTypeDAO extends AbstractJpaDao<ContentTypeEntity> implements
 		try {
 			List<BaseModel> result = (List<BaseModel>) em.createQuery(hql).getResultList();
 			if (result != null || !result.isEmpty()) {
-				ResultList<BaseModel> resultList = new ResultList<BaseModel>(result);
+				ResultListEx<BaseModel> resultList = new ResultListEx<BaseModel>(result);
 				return resultList;
 			} else {
-				return new ResultList<BaseModel>(new ArrayList<>());
+				return new ResultListEx<BaseModel>(new ArrayList<>());
 			}
 		} catch (Exception e) {
 			return ErrorConstant.getError(ErrorConstant.ERROR_FETCH_CONTENT_TYPE);

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.babycare.model.BaseModel;
 import com.babycare.model.Error;
 import com.babycare.model.ResultList;
-
 import com.babycare.model.entity.ContentTypeEntity;
-
 import com.babycare.service.IContentTypeService;
 
 @RestController(value = "contentTypeController")
@@ -24,7 +22,7 @@ public class ContentTypeController {
 	@Qualifier("contentTypeService")
 	private IContentTypeService contentTypeService;
 
-	@GetMapping(value = "/get/all", headers = "Accept=application/json", produces = "application/json")
+	@PostMapping(value = "/get/all", headers = "Accept=application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<BaseModel> fetchContentTypes() {
 		BaseModel model = contentTypeService.fetchContentTypes();
 		return Response(model);

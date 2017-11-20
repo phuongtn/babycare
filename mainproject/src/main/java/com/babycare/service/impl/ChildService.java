@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.babycare.dao.IChildDAO;
@@ -62,6 +65,11 @@ public class ChildService extends AbstractJpaService<ChildEntity> implements ICh
 	}
 
 	@Override
+	public BaseModel getChildById(Long childId) {
+		return childDAO.getChildById(childId);
+	}
+
+	@Override
 	public BaseModel fetchChildrenByUserId(Child payload) {
 		return childDAO.fetchChildrenByUserId(payload);
 	}
@@ -75,5 +83,25 @@ public class ChildService extends AbstractJpaService<ChildEntity> implements ICh
 			model.setRequestBySessionId(requestId);
 			publisher.publishEvent(new ChangeEvent(model));
 		}
+	}
+
+	@Override
+	public Page<ChildEntity> findPaginated(Pageable pageable) {
+		return childDAO.findPaginated(pageable);
+	}
+
+	@Override
+	public Page<ChildEntity> findPaginated(Integer page, Integer size) {
+		return childDAO.findPaginated(page, size);
+	}
+
+	@Override
+	public Page<ChildEntity> findExamplePaginated(Example<ChildEntity> example, Pageable pageable) {
+		return childDAO.findExamplePaginated(example, pageable);
+	}
+
+	@Override
+	public Page<ChildEntity> findExamplePaginated(Example<ChildEntity> example, Integer page, Integer size) {
+		return childDAO.findExamplePaginated(example, page, size);
 	}
 }
